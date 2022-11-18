@@ -10,8 +10,14 @@
 class FontFamily {
   FontFamily._();
 
+  /// Font family: InterBold
+  static const String interBold = 'InterBold';
+
   /// Font family: InterMedium
   static const String interMedium = 'InterMedium';
+
+  /// Font family: InterRegular
+  static const String interRegular = 'InterRegular';
 
   /// Font family: InterSemi
   static const String interSemi = 'InterSemi';

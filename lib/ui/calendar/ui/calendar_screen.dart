@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:xvitamins/ui/current_day/ui/current_day.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
@@ -55,6 +56,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               TableCalendar(
                 focusedDay: today,
+                onDaySelected: (day,d)=>Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: day,))),
                 headerStyle: HeaderStyle(
                   titleCentered: true,
                   titleTextStyle: AppTypography.semibold.copyWith(
@@ -82,11 +84,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     8.r,
                   ),
                 ),
+                  disabledTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.black,
+                  ),
                   todayTextStyle: AppTypography.medium.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 18.w,
                     color: AppColors.white,
-                  )
+                  ),
+                  outsideTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.gray2,
+                  ),
+                  defaultTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.black,
+                  ),
+                  holidayTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.black,
+                  ),
+                  rangeEndTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.black,
+                  ),
+                  rangeStartTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.black,
+                  ),
+                  weekendTextStyle: AppTypography.medium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.w,
+                    color: AppColors.black,
+                  ),
                 ),
                 daysOfWeekStyle: DaysOfWeekStyle(
                   weekdayStyle: AppTypography.medium.copyWith(
@@ -101,9 +138,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ),
                 startingDayOfWeek: StartingDayOfWeek.monday,
-                firstDay: DateTime.now(),
+                firstDay: today,
+                currentDay: today,
                 lastDay: DateTime.now().add(
-                  const Duration(days: 30),
+                  const Duration(days: 365),
                 ),
               ),
               SizedBox(height:24.h,),

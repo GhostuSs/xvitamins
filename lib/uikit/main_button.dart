@@ -23,7 +23,7 @@ class MainButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            'Monthly statistics',
+            label,
             style: AppTypography.medium.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 14.w,

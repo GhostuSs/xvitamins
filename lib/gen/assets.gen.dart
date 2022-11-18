@@ -14,14 +14,21 @@ import 'package:flutter/services.dart';
 class $AssetsFontsGen {
   const $AssetsFontsGen();
 
+  /// File path: assets/fonts/Inter-Bold.ttf
+  String get interBold => 'assets/fonts/Inter-Bold.ttf';
+
   /// File path: assets/fonts/Inter-Medium.ttf
   String get interMedium => 'assets/fonts/Inter-Medium.ttf';
+
+  /// File path: assets/fonts/Inter-Regular.ttf
+  String get interRegular => 'assets/fonts/Inter-Regular.ttf';
 
   /// File path: assets/fonts/Inter-SemiBold.ttf
   String get interSemiBold => 'assets/fonts/Inter-SemiBold.ttf';
 
   /// List of all assets
-  List<String> get values => [interMedium, interSemiBold];
+  List<String> get values =>
+      [interBold, interMedium, interRegular, interSemiBold];
 }
 
 class $AssetsImagesGen {
