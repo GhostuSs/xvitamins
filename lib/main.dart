@@ -13,8 +13,12 @@ Future<void> main() async {
   } else {
     directory = await getApplicationDocumentsDirectory();
   }
-  Hive.init(directory.path);
-  runApp(const App());
+  Hive.init(
+    directory.path,
+  );
+  runApp(
+    const App(),
+  );
 }
 
 class App extends StatelessWidget {
@@ -23,10 +27,9 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      builder:(_,s)=>const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MainScreen(),
-      )
-    );
+        builder: (_, s) => const MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: MainScreen(),
+            ));
   }
 }
