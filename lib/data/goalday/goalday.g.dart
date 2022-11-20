@@ -21,13 +21,14 @@ class GoalDayAdapter extends TypeAdapter<GoalDay> {
       note: fields[2] as String?,
       food: (fields[1] as List?)?.cast<Food>(),
       seen: fields[3] as bool?,
+      completed: fields[4] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, GoalDay obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.day)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class GoalDayAdapter extends TypeAdapter<GoalDay> {
       ..writeByte(2)
       ..write(obj.note)
       ..writeByte(3)
-      ..write(obj.seen);
+      ..write(obj.seen)
+      ..writeByte(4)
+      ..write(obj.completed);
   }
 
   @override
