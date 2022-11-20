@@ -16,10 +16,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final double _iconSize = 28.w;
   PersistentTabController controller = PersistentTabController(initialIndex: 0);
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return Scaffold(
       body: PersistentTabView.custom(
         context,
@@ -42,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<PersistentBottomNavBarItem> _buildItems() {
-    TextStyle _style(bool isSelected) => TextStyle(color: AppColors.black);
+    TextStyle _style(bool isSelected) => const TextStyle(color: AppColors.black);
 
     Color colorSelector(int index) {
       return controller.index == index ? AppColors.blue : AppColors.gray2;

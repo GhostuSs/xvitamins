@@ -7,7 +7,9 @@ class MainButton extends StatelessWidget {
   final VoidCallback onTap;
   final String label;
   final bool? mainType;
-  const MainButton({Key? key, required this.onTap, this.mainType, required this.label}) : super(key: key);
+  final double? width;
+  final Color? customColor;
+  const MainButton({Key? key, required this.onTap, this.mainType, required this.label, this.width, this.customColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +18,10 @@ class MainButton extends StatelessWidget {
       child: Container(
         constraints: BoxConstraints.expand(
           height: 44.h,
+          width: width ?? double.infinity,
         ),
         decoration: BoxDecoration(
-            color: mainType==true ? AppColors.blue : AppColors.gray3,
+            color: mainType==true ? customColor ?? AppColors.blue : AppColors.gray3,
             borderRadius: BorderRadius.circular(5.r)
         ),
         child: Center(

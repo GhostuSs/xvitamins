@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:xvitamins/data/GDays/gdays.dart';
+import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/ui/current_day/ui/current_day.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -56,7 +59,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               TableCalendar(
                 focusedDay: today,
-                onDaySelected: (day,d)=>Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: day,))),
+                onDaySelected: (day,d)=>Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: day,
+                    day: Hive.box<GDays>('goals').values.first.days?.any((element) => element.day==day)==true ?  Hive.box<GDays>('goals').values.first.days?.firstWhere((elem)=>elem.day==day) : GoalDay(day: day),))),
                 headerStyle: HeaderStyle(
                   titleCentered: true,
                   titleTextStyle: AppTypography.semibold.copyWith(
@@ -147,7 +151,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               SizedBox(height:24.h,),
               MainButton(onTap:(){}, label: 'Monthly statistics'),
               const Spacer(),
-              MainButton(onTap:(){}, label: 'Add fruit and Veg',mainType: true,),
+              MainButton(onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: today))), label: 'Add fruit and Veg',mainType: true,),
               const SizedBox(
                 height: 16
               ),
