@@ -4,6 +4,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:xvitamins/gen/assets.gen.dart';
 import 'package:xvitamins/ui/calendar/ui/calendar_screen.dart';
 import 'package:xvitamins/ui/main/uikit/custom_navbar_widget.dart';
+import 'package:xvitamins/ui/onboarding/ui/onboarding.dart';
 import 'package:xvitamins/ui/settings/ui/settings_screen.dart';
 import 'package:xvitamins/ui/weekly_facts/ui/weekly_facts.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -88,6 +89,6 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> _buildScreens() => [
         const CalendarScreen(),
         const WeeklyScreen(),
-        const SettingsScreen(),
+        SettingsScreen(navigateToOnb: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>const Onboarding())),),
       ];
 }

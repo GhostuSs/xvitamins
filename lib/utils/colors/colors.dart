@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 ///Цветовая палитра проекта
 abstract class AppColors{
+  static const Color onbBg = Color.fromRGBO(27, 27, 35, 1);
   static const Color gray2 = Color(0xFFACACB0);
   static const Color gray3 = Color(0xFFEFEFEF);
   static const Color black = Color(0xFF000000);

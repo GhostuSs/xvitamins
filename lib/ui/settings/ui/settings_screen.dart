@@ -4,7 +4,8 @@ import 'package:xvitamins/ui/settings/uikit/settings_button.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  final VoidCallback navigateToOnb;
+  const SettingsScreen({Key? key, required this.navigateToOnb}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +38,10 @@ class SettingsScreen extends StatelessWidget {
             SizedBox(
               height: 24.h,
             ),
-            const SettingsButton(
+            SettingsButton(
               label: 'Buy Premium😎',
               isPrem: true,
+              onTap: ()=>navigateToOnb(),
             ),
             const SettingsButton(
               label: 'Privacy Policy',
