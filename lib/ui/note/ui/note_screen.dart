@@ -33,8 +33,6 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(controller.text);
-    print(widget.date);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -74,19 +72,16 @@ class _NoteScreenState extends State<NoteScreen> {
             ),),
             if(changed)MainButton(
               onTap: () async {
-                if(widget.note!=''){
-                  print('s');
-                  final boxs = Hive.box<GDays>('goals');
-                  final value = boxs.values.first.days?.firstWhere((element) => element.note==widget.note);
-                  boxs.values.first.days?.remove(value);
-                  value?.note=controller.text;
-                  boxs.values.first.days?.add(value!);
-                  final box = boxs.values.first;
-                  await boxs.clear();
-                  await boxs.put('goals', box);
+                if(widget.note!=''&&Hive.box<GDays>('goals').values.first.days?.where((element) => element.day==widget.date).isNotEmpty==true){
+                  final box = Hive.box<GDays>('goals');
+                  final gday = GoalDay(note:controller.text,day: widget.date);
+                  box.values.first.days?.removeWhere((element) => element.day==widget.date);
+                  box.values.first.days!.add(gday);
+                  await box.put('goals', box.values.first);
                 }else{
                   final box = Hive.box<GDays>('goals');
-                  box.values.first.days?.add(GoalDay(note:controller.text,day: widget.date));
+                  final gday = GoalDay(note:controller.text,day: widget.date);
+                  box.values.first.days!.add(gday);
                   await box.put('goals', box.values.first);
                 }
                 setState(()=>changed=false);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
+import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/ui/current_day/uikit/note_widget.dart';
 import 'package:xvitamins/ui/note/ui/note_screen.dart';
@@ -10,6 +11,8 @@ import 'package:xvitamins/uikit/dialog.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
+
+import '../../add_fruit/ui/add_fruit.dart';
 
 class CurrentDayScreen extends StatefulWidget {
   final DateTime selected;
@@ -25,9 +28,29 @@ class CurrentDayScreen extends StatefulWidget {
 }
 
 class _CurrentDayScreenState extends State<CurrentDayScreen> {
+
+  late List<Map<String,dynamic>> chartData;
+  int sum=0;
+  @override
+  void initState() {
+    if(Hive.box<GDays>('goals').values.first.days?.isNotEmpty==true) {
+    final list = (Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).food ?? []);
+    final data = List.generate(list.length, (index) => {"domain":list[index].name,"measure":list[index].gramms});
+    for(int i=0;i<data.length;i++){
+      sum+=data[i]['measure'] as int;
+    }
+    if(400-sum>0)data.add({"domain":"left","measure":400- sum});
+    chartData=data;
+    }else{
+      chartData=[
+       {"domain":'left',"measure":400}
+      ];
+    }
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    print(widget.day?.day);
     print(widget.day?.note);
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -80,7 +103,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                   Container(
                     width: 145.w,
                     height: 145.w,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Color(0xFFD1FFFC),
                       shape: BoxShape.circle,
                     ),
@@ -89,26 +112,23 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     width: 180.w,
                     height: 180.w,
                     child: DChartPie(
-                      data: [
-                        {'domain': 'Flutter', 'measure': 28},
-                        {'domain': 'React Native', 'measure': 27},
-                        {'domain': 'Ionic', 'measure': 20},
-                        {'domain': 'Cordova', 'measure': 15},
-                      ],
+                      data:
+                        chartData
+                      ,
                       labelPosition: PieLabelPosition.inside,
                       showLabelLine: false,
                       labelPadding: 0,
                       labelColor: Colors.transparent,
                       fillColor: (pieData, index) =>
-                          colorSelector(index: index),
+                          sum==0 ? AppColors.emptyGoals : colorSelector(index: index),
                       donutWidth: 20,
                     ),
                   ),
                   Text(
-                    '0/400',
+                    '${400-sum}/400',
                     style: AppTypography.bold.copyWith(
                       fontWeight: FontWeight.w700,
-                      fontSize: 24.w,
+                      fontSize: 20.w,
                       color: AppColors.black,
                     ),
                   ),
@@ -123,7 +143,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                 ),
               const Spacer(),
               MainButton(
-                onTap: () {},
+                onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>AddScreen())),
                 label: 'Add Fruit and Veg',
                 mainType: true,
               ),
@@ -294,22 +314,10 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
   }
 
   Future<void> deleteNote() async {
-    if (widget.day?.note != '') {
-      print('s');
-      final boxs = Hive.box<GDays>('goals');
-      final value = boxs.values.first.days
-          ?.firstWhere((element) => element.note == widget.day?.note);
-      boxs.values.first.days?.remove(value);
-      value?.note = '';
-      boxs.values.first.days?.add(value!);
-      final box = boxs.values.first;
-      await boxs.clear();
-      await boxs.put('goals', box);
-    } else {
-      final box = Hive.box<GDays>('goals');
-      box.values.first.days?.add(GoalDay(note: '', day: widget.selected));
-      await box.put('goals', box.values.first);
-    }
+    final box = Hive.box<GDays>('goals');
+    final gday = GoalDay(note:'',day: widget.selected);
+    box.values.first.days?.firstWhere((element) => element.day==widget.selected).note='';
+    await box.put('goals', box.values.first);
     setState(() {});
   }
 }

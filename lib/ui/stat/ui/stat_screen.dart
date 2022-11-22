@@ -49,3 +49,19 @@ class _StatScreenState extends State<StatScreen> {
     );
   }
 }
+
+class StatWidget extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  const StatWidget({Key? key, required this.label, required this.subtitle}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(label,style: AppTypography.semibold.copyWith(
+        ),)
+      ],
+    );
+  }
+}

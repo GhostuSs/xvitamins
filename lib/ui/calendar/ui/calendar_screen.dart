@@ -77,7 +77,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       .first
                                       .days
                                       ?.firstWhere((elem) => elem.day == day)
-                                  : GoalDay(day: day),
+                                  : GoalDay(day: day,note: ''),
                             ))),
                 headerStyle: HeaderStyle(
                   titleCentered: true,
@@ -181,7 +181,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => CurrentDayScreen(selected: today),
+                    builder: (_) => CurrentDayScreen(selected: today,day: Hive.box<GDays>('goals')
+                        .values
+                        .first
+                        .days
+                        ?.any((element) =>
+                    element.day == today) ==
+                        true
+                        ? Hive.box<GDays>('goals')
+                        .values
+                        .first
+                        .days
+                        ?.firstWhere((elem) => elem.day == today)
+                        : GoalDay(day: today,note: ''),),
                   ),
                 ),
                 label: 'Add fruit and Veg',

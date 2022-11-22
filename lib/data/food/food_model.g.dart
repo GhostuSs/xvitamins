@@ -42,3 +42,17 @@ class FoodAdapter extends TypeAdapter<Food> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Food _$FoodFromJson(Map<String, dynamic> json) => Food(
+      name: json['name'] as String?,
+      gramms: json['gramms'] as int?,
+    );
+
+Map<String, dynamic> _$FoodToJson(Food instance) => <String, dynamic>{
+      'name': instance.name,
+      'gramms': instance.gramms,
+    };
