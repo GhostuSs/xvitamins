@@ -25,6 +25,10 @@ Future<void> main() async {
     ..registerAdapter<GDays>(GDaysAdapter());
   await Hive.deleteFromDisk();
   await Hive.openBox<GDays>('goals');
+  await Hive.openBox<bool>('premium');
+  if(Hive.box<bool>('premium').values.isEmpty==true){
+    await Hive.box<bool>('premium').put('premium', false);
+  }
   if (Hive.box<GDays>('goals').values.isEmpty == true) {
     print('empty data');
     await Hive.box<GDays>('goals').put(
@@ -36,7 +40,6 @@ Future<void> main() async {
     );
   }
   // Hive.deleteFromDisk();
-  // print(Hive.box<GDays>('goals').values.first.days?.first.note);
   runApp(
     const App(),
   );

@@ -60,25 +60,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               TableCalendar(
                 focusedDay: today,
+                currentDay:today,
                 onDaySelected: (day, d) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => CurrentDayScreen(
-                              selected: day,
-                              day: Hive.box<GDays>('goals')
-                                          .values
-                                          .first
-                                          .days
-                                          ?.any((element) =>
-                                              element.day == day) ==
-                                      true
-                                  ? Hive.box<GDays>('goals')
-                                      .values
-                                      .first
-                                      .days
-                                      ?.firstWhere((elem) => elem.day == day)
-                                  : GoalDay(day: day,note: ''),
-                            ))),
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CurrentDayScreen(
+                      selected: day,
+                      day: Hive.box<GDays>('goals')
+                                  .values
+                                  .first
+                                  .days
+                                  ?.any((element) => element.day == day) ==
+                              true
+                          ? Hive.box<GDays>('goals')
+                              .values
+                              .first
+                              .days
+                              ?.firstWhere((elem) => elem.day == day)
+                          : GoalDay(day: day, note: ''),
+                    ),
+                  ),
+                ),
                 headerStyle: HeaderStyle(
                   titleCentered: true,
                   titleTextStyle: AppTypography.semibold.copyWith(
@@ -153,6 +155,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     fontWeight: FontWeight.w500,
                     color: AppColors.gray2,
                   ),
+                  dowTextFormatter: (date,locale)=>dayLabels(date),
                   weekendStyle: AppTypography.medium.copyWith(
                     fontSize: 18.w,
                     fontWeight: FontWeight.w500,
@@ -160,8 +163,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ),
                 startingDayOfWeek: StartingDayOfWeek.monday,
-                firstDay: today,
-                currentDay: today,
+                firstDay: DateTime.now().subtract(
+                  const Duration(days: 365),
+                ),
                 lastDay: DateTime.now().add(
                   const Duration(days: 365),
                 ),
@@ -181,19 +185,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => CurrentDayScreen(selected: today,day: Hive.box<GDays>('goals')
-                        .values
-                        .first
-                        .days
-                        ?.any((element) =>
-                    element.day == today) ==
-                        true
-                        ? Hive.box<GDays>('goals')
-                        .values
-                        .first
-                        .days
-                        ?.firstWhere((elem) => elem.day == today)
-                        : GoalDay(day: today,note: ''),),
+                    builder: (_) => CurrentDayScreen(
+                      selected: today,
+                      day: Hive.box<GDays>('goals')
+                                  .values
+                                  .first
+                                  .days
+                                  ?.any((element) => element.day == today) ==
+                              true
+                          ? Hive.box<GDays>('goals')
+                              .values
+                              .first
+                              .days
+                              ?.firstWhere((elem) => elem.day == today)
+                          : GoalDay(day: today, note: ''),
+                    ),
                   ),
                 ),
                 label: 'Add fruit and Veg',
@@ -205,5 +211,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
     );
+  }
+
+  String dayLabels(DateTime date){
+    switch(date.day){
+      case DateTime.monday:
+        return 'Mo';
+      case DateTime.tuesday:
+        return 'Tu';
+      case DateTime.wednesday:
+        return 'We';
+      case DateTime.thursday:
+        return 'Th';
+      case DateTime.friday:
+        return 'Fr';
+      case DateTime.saturday:
+        return 'Sa';
+      case DateTime.sunday:
+        return 'Su';
+      default: return "";
+    }
   }
 }

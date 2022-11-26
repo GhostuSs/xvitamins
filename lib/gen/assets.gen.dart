@@ -43,12 +43,15 @@ class $AssetsImagesGen {
   /// File path: assets/images/settings.svg
   SvgGenImage get settings => const SvgGenImage('assets/images/settings.svg');
 
+  /// File path: assets/images/trash.svg
+  SvgGenImage get trash => const SvgGenImage('assets/images/trash.svg');
+
   /// File path: assets/images/weeklyfacts.svg
   SvgGenImage get weeklyfacts =>
       const SvgGenImage('assets/images/weeklyfacts.svg');
 
   /// List of all assets
-  List<dynamic> get values => [calendar, onb, settings, weeklyfacts];
+  List<dynamic> get values => [calendar, onb, settings, trash, weeklyfacts];
 }
 
 class Assets {

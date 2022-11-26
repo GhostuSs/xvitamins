@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
         navBarHeight: 45.h,
         customWidget: (navbarEss) => CustomNavBarWidget(
           items: _buildItems(),
-          onItemSelected: (int value) => setState(() {
+          onItemSelected: (int value) => controller.index==value ? null : setState(() {
             controller.index = value;
           }),
           selectedIndex: controller.index,

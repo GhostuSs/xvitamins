@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
+import 'package:xvitamins/ui/main/ui/main_screen.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
@@ -83,9 +85,17 @@ class Onboarding extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 15.h, bottom: 26.h),
+                      padding: EdgeInsets.only(
+                        top: 15.h,
+                        bottom: 26.h,
+                      ),
                       child: MainButton(
-                        onTap: () {},
+                        onTap: () async => await Hive.box<bool>('premium')
+                            .put('premium', true)
+                            .then((value) => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const MainScreen()))),
                         label: 'Get Premium 😎',
                         customColor: AppColors.blue,
                       ),

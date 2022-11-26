@@ -13,36 +13,42 @@ class StatScreen extends StatefulWidget {
 class _StatScreenState extends State<StatScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
+    return Container(
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+                color: AppColors.gray2,
+                width: 0.5.w,
+              ))),
+      child: Scaffold(
         backgroundColor: AppColors.white,
-        title: Text(
-          'Monthly statistics',
-          style: AppTypography.semibold.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 20.w,
-            color: AppColors.black,
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: AppColors.white,
+          title: Text(
+            'Monthly statistics',
+            style: AppTypography.semibold.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 20.w,
+              color: AppColors.black,
+            ),
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: AppColors.black,
+            ),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppColors.black,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        child: Container(
-          constraints: const BoxConstraints.expand(),
-          child: Column(
-            children: [
-
-            ],
+        body: SafeArea(
+          minimum: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Container(
+            constraints: const BoxConstraints.expand(),
+            child: Column(
+              children: [],
+            ),
           ),
         ),
       ),
@@ -53,14 +59,17 @@ class _StatScreenState extends State<StatScreen> {
 class StatWidget extends StatelessWidget {
   final String label;
   final String subtitle;
-  const StatWidget({Key? key, required this.label, required this.subtitle}) : super(key: key);
+  const StatWidget({Key? key, required this.label, required this.subtitle})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label,style: AppTypography.semibold.copyWith(
-        ),)
+        Text(
+          label,
+          style: AppTypography.semibold.copyWith(),
+        )
       ],
     );
   }
