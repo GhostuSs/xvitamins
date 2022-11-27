@@ -10,6 +10,8 @@ import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
 
+import '../../../uikit/dialog.dart';
+
 class AddScreen extends StatefulWidget {
   final DateTime day;
   final VoidCallback updateParent;
@@ -213,28 +215,26 @@ class _AddScreenState extends State<AddScreen> {
                               ),
                               const Spacer(),
                               InkWell(
-                                onTap: () async {
-                                  Hive.box<GDays>('goals')
-                                      .values
-                                      .first
-                                      .days
-                                      ?.where((element) =>
-                                          element.day == widget.day)
-                                      .first
-                                      .food
-                                      ?.remove(data);
-                                  final newData =
-                                      Hive.box<GDays>('goals').values.first;
-                                  await Hive.box<GDays>('goals').clear();
-                                  await Hive.box<GDays>('goals')
-                                      .put('goals', newData);
-                                  setState(() {});
-                                },
+                                onTap:()=>showDialog(
+                                  context: context,
+                                  builder: (_) => Dialog(
+                                    clipBehavior: Clip.hardEdge,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25.r),
+                                    ),
+                                    child: CustomDialog(
+                                      label:
+                                      'Do you really want to delete this item?',
+                                      emojy: 'assets/images/reallywant.png',
+                                      actions: const ['Yes', 'No'],
+                                      onYes: () async => await delete(data).then((value) => Navigator.pop(_)),
+                                    ),
+                                  ),
+                                ),
                                 child: Assets.images.trash.svg(
                                   width: 24.w,
                                   height: 24.w,
-                                ),
-                              )
+                                ),),
                             ],
                           ),
                         )
@@ -246,6 +246,24 @@ class _AddScreenState extends State<AddScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> delete(Food data) async {
+    Hive.box<GDays>('goals')
+        .values
+        .first
+        .days
+        ?.where((element) =>
+    element.day == widget.day)
+        .first
+        .food
+        ?.remove(data);
+    final newData =
+        Hive.box<GDays>('goals').values.first;
+    await Hive.box<GDays>('goals').clear();
+    await Hive.box<GDays>('goals')
+        .put('goals', newData);
+    setState(() {});
   }
 
   Future<void> add() async {

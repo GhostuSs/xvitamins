@@ -242,10 +242,13 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                               context: context,
                               builder: (_) => Dialog(
                                 clipBehavior: Clip.hardEdge,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25.r),
+                                ),
                                 child: CustomDialog(
                                     label:
-                                        'Do you really want to delete this note?',
-                                    emojy: '🤨',
+                                    'Do you really want to delete this note?',
+                                    emojy: 'assets/images/reallywant.png',
                                     actions: const ['Yes', 'No'],
                                     onYes: () async => await deleteNote()),
                               ),
