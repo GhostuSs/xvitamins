@@ -66,7 +66,32 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
       }
     }
     super.initState();
-    print(chartData);
+    if(widget.day?.seen!=true){
+          Future.delayed(Duration.zero).then((value) => showDialog(
+            context: context,
+            builder: (_) => Dialog(
+              clipBehavior: Clip.hardEdge,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.r),
+              ),
+              child: CustomDialog(
+                label:
+                'Goal not met',
+                emojy: sum<400&&widget.day?.day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true ? 'assets/images/notmet.png' : 'assets/images/met.png',
+                actions: const ['OK'], onYes: () async {
+                  final gday= widget.day;
+                  gday?.seen=true;
+                  Hive.box<GDays>('goals').values.first.days?.remove(widget.day);
+                  Hive.box<GDays>('goals').values.first.days?.add(gday!);
+                  final newData = Hive.box<GDays>('goals').values.first;
+                  await Hive.box<GDays>('goals').clear();
+                  await Hive.box<GDays>('goals').put('goals', newData);
+                Navigator.pop(_);
+              },
+              ),
+            ),
+          ));
+    }
   }
 
   @override

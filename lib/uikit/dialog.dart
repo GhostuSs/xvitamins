@@ -55,7 +55,7 @@ class CustomDialog extends StatelessWidget {
                 onTap: onYes!,
                 label: actions[0],
                 mainType: true,
-                width: 120.w,
+                width: actions.length>1 ? 120.w : 250.w,
                 customColor: AppColors.blue,
               ),
               if (actions.length > 1)
