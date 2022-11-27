@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
-import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/ui/current_day/uikit/note_widget.dart';
 import 'package:xvitamins/ui/note/ui/note_screen.dart';
@@ -13,6 +12,7 @@ import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
 
 import '../../add_fruit/ui/add_fruit.dart';
+import '../../calendar/ui/calendar_screen.dart';
 
 class CurrentDayScreen extends StatefulWidget {
   final DateTime selected;
@@ -50,18 +50,23 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
       final data = List.generate(
           list.length,
           (index) =>
-              {"domain": list[index].name, "measure": list[index].gramms});
+              {"domain": " ${list[index].name}   $index", "measure": list[index].gramms});
       for (int i = 0; i < data.length; i++) {
         sum += data[i]['measure'] as int;
       }
-      if (400 - sum > 0) data.add({"domain": "left", "measure": 400 - sum});
+      if (400-sum > 0) {
+        data.add({"domain": "left", "measure": 400 - sum});
+      }
       chartData = data;
     } else {
-      chartData = [
+      if(sum==0) {
+        chartData = [
         {"domain": 'left', "measure": 400}
       ];
+      }
     }
     super.initState();
+    print(chartData);
   }
 
   @override
@@ -92,7 +97,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               Icons.arrow_back,
               color: AppColors.black,
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const CalendarScreen())),
           ),
         ),
         body: SafeArea(
@@ -167,13 +172,13 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                   child: chartData.length == 1
                       ? Center(
                           child: FoodWidget(
-                              data: chartData.first, chartData: chartData),
+                              data: chartData.first, chartData: chartData,sum: sum,),
                         )
                       : ListView(
                           scrollDirection: Axis.horizontal,
                           children: [
                             for (var data in chartData)
-                              FoodWidget(data: data, chartData: chartData)
+                              FoodWidget(data: data, chartData: chartData,sum: sum,)
                           ],
                         ),
                 ),
@@ -188,6 +193,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     MaterialPageRoute(
                       builder: (_) => AddScreen(
                         day: widget.selected,
+                        updateParent:()=>setState((){})
                       ),
                     ),
                   ),
@@ -205,6 +211,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                             builder: (_) => NoteScreen(
                               note: widget.day?.note ?? '',
                               date: widget.selected,
+                              updateParent: ()=>setState((){}),
                             ),
                           ),
                         ),
@@ -220,6 +227,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                                 builder: (_) => NoteScreen(
                                   note: widget.day?.note ?? '',
                                   date: widget.selected,
+                                  updateParent: ()=>setState(() {}),
                                   autofocus: true,
                                 ),
                               ),
@@ -335,7 +343,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
   }
 }
 
-Color colorSelector({index}) {
+Color colorSelector({index}){
   Color color = AppColors.gray3;
   switch (index) {
     case 0:
@@ -367,15 +375,16 @@ Color colorSelector({index}) {
       break;
     case 9:
       color = AppColors.lightGreen;
+      break;
   }
-  ;
   return color;
 }
 
 class FoodWidget extends StatelessWidget {
   final Map<String, dynamic> data;
   final List<Map<String, dynamic>> chartData;
-  const FoodWidget({Key? key, required this.data, required this.chartData})
+  final int sum;
+  const FoodWidget({Key? key, required this.data, required this.chartData, required this.sum})
       : super(key: key);
 
   @override
@@ -398,7 +407,7 @@ class FoodWidget extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                '${((data['measure'] / 400) * 100).round()}%',
+                '${((data['measure'] /(sum<=400 ? 400 : sum)) * 100).round()}%',
                 style: AppTypography.bold.copyWith(
                   fontSize: 12.w,
                   fontWeight: FontWeight.w700,
@@ -410,7 +419,7 @@ class FoodWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 10),
             child: Text(
-              data['domain'] + ' (' + data['measure'].toString() + "g)",
+              data['domain'].split('   ').first + ' (' + data['measure'].toString() + "g)",
               style: AppTypography.medium.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 16.w,

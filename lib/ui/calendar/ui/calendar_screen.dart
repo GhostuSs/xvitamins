@@ -61,6 +61,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
               TableCalendar(
                 focusedDay: today,
                 currentDay:today,
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (_,date,events)=>Center(
+                    child: Container(constraints: BoxConstraints.expand(width: 36.w,height: 35.w),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(
+                            color: dayColorSelector(date),
+                          )
+                      ),),
+                  )
+                ),
                 onDaySelected: (day, d) => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -211,6 +222,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
     );
+  }
+
+  Color dayColorSelector(DateTime date){
+    if(date.day==DateTime.now().day&&date.month==DateTime.now().month&&date.year==DateTime.now().year)return AppColors.blue;
+    if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year).isNotEmpty==true){
+      final gday=Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year);
+      return gday?.completed==true ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true ?  AppColors.red : gday?.note!=null&&gday?.note!='' ? AppColors.black : Colors.transparent;
+    }
+    return Colors.transparent;
   }
 
   String dayLabels(DateTime date){

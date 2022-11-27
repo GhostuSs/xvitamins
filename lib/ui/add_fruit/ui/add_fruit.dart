@@ -12,7 +12,8 @@ import 'package:xvitamins/utils/typography/app_typography.dart';
 
 class AddScreen extends StatefulWidget {
   final DateTime day;
-  const AddScreen({Key? key, required this.day}) : super(key: key);
+  final VoidCallback updateParent;
+  const AddScreen({Key? key, required this.day, required this.updateParent,}) : super(key: key);
 
   @override
   State<AddScreen> createState() => _AddScreenState();
@@ -50,10 +51,11 @@ class _AddScreenState extends State<AddScreen> {
               Icons.arrow_back,
               color: AppColors.black,
             ),
-            onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => CurrentDayScreen(selected: widget.day))),
+            onPressed: () => {
+              // Navigator.pop(context),
+              // Navigator.pop(context),
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: widget.day)))
+            },
           ),
         ),
         body: SafeArea(
@@ -268,22 +270,32 @@ class _AddScreenState extends State<AddScreen> {
         gramms: int.parse(grammcontroller.text),
       ));
       Hive.box<GDays>('goals').values.first.days?.add(gday);
+      int sum=0;
+      gday.food?.every((element){
+        sum+=element.gramms??0;
+        print(sum);
+        return true;
+      });
+      if(sum>=400)gday.completed=true;
     } else {
-      Hive.box<GDays>('goals').values.first.days?.add(GoalDay(
-            day: widget.day,
-            food: [
-              Food(
-                name: namecontroller.text,
-                gramms: int.parse(grammcontroller.text),
-              )
-            ],
-          ));
+      final gday=GoalDay(
+        day: widget.day,
+        food: [
+          Food(
+            name: namecontroller.text,
+            gramms: int.parse(grammcontroller.text),
+          )
+        ],
+        completed: (int.parse(grammcontroller.text)>=400) ? true : null,
+      );
+      Hive.box<GDays>('goals').values.first.days?.add(gday);
       final newData = Hive.box<GDays>('goals').values.first;
       await Hive.box<GDays>('goals').clear();
       await Hive.box<GDays>('goals').put('goals', newData);
     }
     namecontroller.clear();
     grammcontroller.text = '100';
+    widget.updateParent();
   }
 }
 
