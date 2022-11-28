@@ -4,10 +4,10 @@ import 'package:xvitamins/data/goalday/goalday.dart';
 part 'gdays.g.dart';
 
 @HiveType(typeId: 3)
-///Один день
+///Все дни
 class GDays extends HiveObject{
   GDays({this.days,});
-  @HiveField(0)
+  @HiveField(0,defaultValue: [])
   List<GoalDay>? days;
 
 }

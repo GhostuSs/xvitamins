@@ -27,6 +27,10 @@ Future<void> main() async {
   await Hive.deleteFromDisk();
   await Hive.openBox<GDays>('goals');
   await Hive.openBox<bool>('premium');
+  await Hive.openBox<int>('dailygoal');
+  if(Hive.box<int>('dailygoal').isEmpty==true){
+    await Hive.box<int>('dailygoal').put('dailygoal', 400);
+  }
   if(Hive.box<bool>('premium').values.isEmpty==true){
     await Hive.box<bool>('premium').put('premium', false);
   }
@@ -42,7 +46,7 @@ Future<void> main() async {
       ),
     );
   }
-  // Hive.deleteFromDisk();
+  // await Hive.deleteFromDisk();
   runApp(
     const App(),
   );

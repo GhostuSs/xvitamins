@@ -54,19 +54,20 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
       for (int i = 0; i < data.length; i++) {
         sum += data[i]['measure'] as int;
       }
-      if (400-sum > 0) {
-        data.add({"domain": "left", "measure": 400 - sum});
+      data.sort((a,b)=>(b['measure'] as int).compareTo(a['measure'] as int));
+      if (Hive.box<int>('dailygoal').values.first-sum > 0) {
+        data.add({"domain": "left", "measure": Hive.box<int>('dailygoal').values.first - sum});
       }
       chartData = data;
     } else {
       if(sum==0) {
         chartData = [
-        {"domain": 'left', "measure": 400}
+        {"domain": 'left', "measure": Hive.box<int>('dailygoal').values.first}
       ];
       }
     }
     super.initState();
-    if(widget.day?.seen!=true){
+    if(widget.day?.seen!=true&&(widget.day?.day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true)){
           Future.delayed(Duration.zero).then((value) => showDialog(
             context: context,
             builder: (_) => Dialog(
@@ -77,14 +78,14 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               child: CustomDialog(
                 label:
                 'Goal not met',
-                emojy: sum<400&&widget.day?.day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true ? 'assets/images/notmet.png' : 'assets/images/met.png',
+                emojy: sum<Hive.box<int>('dailygoal').values.first&&widget.day?.day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true ? 'assets/images/notmet.png' : 'assets/images/met.png',
                 actions: const ['OK'], onYes: () async {
                   final gday= widget.day;
                   gday?.seen=true;
                   Hive.box<GDays>('goals').values.first.days?.remove(widget.day);
                   Hive.box<GDays>('goals').values.first.days?.add(gday!);
                   final newData = Hive.box<GDays>('goals').values.first;
-                  await Hive.box<GDays>('goals').clear();
+                  // await Hive.box<GDays>('goals').clear();
                   await Hive.box<GDays>('goals').put('goals', newData);
                 Navigator.pop(_);
               },
@@ -164,22 +165,22 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                       height: 180.w,
                       child: DChartPie(
                         data: chartData,
-                        labelPosition: PieLabelPosition.inside,
+                        labelPosition: PieLabelPosition.auto,
                         showLabelLine: false,
                         labelPadding: 0,
                         strokeWidth: 0,
                         labelColor: Colors.transparent,
                         fillColor: (pieData, index) =>
-                            sum < 400 && pieData['domain'] == 'left'
+                            sum < Hive.box<int>('dailygoal').values.first && pieData['domain'] == 'left'
                                 ? AppColors.emptyGoals
                                 : colorSelector(index: index),
                         donutWidth: 20,
                       ),
                     ),
-                    sum < 400
+                    sum < Hive.box<int>('dailygoal').values.first
                         ? Text(
-                            '$sum/400',
-                            style: AppTypography.bold.copyWith(
+                            '$sum/${Hive.box<int>('dailygoal').values.first}',
+                           style: AppTypography.bold.copyWith(
                               fontWeight: FontWeight.w700,
                               fontSize: 20.w,
                               color: AppColors.black,
@@ -412,7 +413,7 @@ class FoodWidget extends StatelessWidget {
   final Map<String, dynamic> data;
   final List<Map<String, dynamic>> chartData;
   final int sum;
-  const FoodWidget({Key? key, required this.data, required this.chartData, required this.sum})
+  const FoodWidget({Key? key, required this.data, required this.chartData, required this.sum,})
       : super(key: key);
 
   @override
@@ -431,11 +432,11 @@ class FoodWidget extends StatelessWidget {
               shape: BoxShape.circle,
               color: data['domain'] == 'left'
                   ? AppColors.emptyGoals
-                  : colorSelector(index: chartData.indexOf(data)),
+                  : colorSelector(index:chartData.indexOf(data)),
             ),
             child: Center(
               child: Text(
-                '${((data['measure'] /(sum<=400 ? 400 : sum)) * 100).round()}%',
+                '${((data['measure'] /(sum<=Hive.box<int>('dailygoal').values.first ? Hive.box<int>('dailygoal').values.first : sum)) * 100).round()}%',
                 style: AppTypography.bold.copyWith(
                   fontSize: 12.w,
                   fontWeight: FontWeight.w700,
@@ -451,7 +452,8 @@ class FoodWidget extends StatelessWidget {
               style: AppTypography.medium.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 16.w,
-                  color: AppColors.black),
+                  color: AppColors.black,
+              ),
             ),
           ),
         ],

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/ui/current_day/ui/current_day.dart';
+import 'package:xvitamins/ui/onboarding/ui/onboarding.dart';
 import 'package:xvitamins/ui/stat/ui/stat_screen.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -185,11 +187,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 height: 24.h,
               ),
               MainButton(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const StatScreen(),
-                      )),
+                  onTap: () => pushNewScreen(context, screen: Hive.box<bool>('premium').values.first==true ? const StatScreen() : const Onboarding(),withNavBar: Hive.box<bool>('premium').values.first==true ? true : false),
                   label: 'Monthly statistics'),
               const Spacer(),
               MainButton(
@@ -228,7 +226,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if(date.day==DateTime.now().day&&date.month==DateTime.now().month&&date.year==DateTime.now().year)return AppColors.blue;
     if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year).isNotEmpty==true){
       final gday=Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year);
-      return gday?.completed==true ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true ?  AppColors.red : gday?.note!=null&&gday?.note!='' ? AppColors.black : Colors.transparent;
+      return gday?.completed==true ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true&&gday?.note!='' ?  AppColors.red : gday?.note!=null&&gday?.note!='' ? AppColors.black : Colors.transparent;
     }
     return Colors.transparent;
   }

@@ -283,10 +283,13 @@ class _AddScreenState extends State<AddScreen> {
           .first
           .days
           ?.removeWhere((element) => element.day == widget.day);
-      gday.food?.add(Food(
+      final Food newFood = Food(
         name: namecontroller.text,
         gramms: int.parse(grammcontroller.text),
-      ));
+      );
+      gday.food!.add(newFood);
+      gday.food?.sort((a,b)=>b.gramms!.compareTo(a.gramms!));
+
       Hive.box<GDays>('goals').values.first.days?.add(gday);
       int sum=0;
       gday.food?.every((element){
@@ -295,6 +298,9 @@ class _AddScreenState extends State<AddScreen> {
         return true;
       });
       if(sum>=400)gday.completed=true;
+      final gdays = Hive.box<GDays>('goals').values.first;
+      await Hive.box<GDays>('goals').clear();
+      await Hive.box<GDays>('goals').put('goals', gdays);
     } else {
       final gday=GoalDay(
         day: widget.day,

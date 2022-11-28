@@ -17,8 +17,8 @@ class FoodAdapter extends TypeAdapter<Food> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Food(
-      name: fields[0] as String?,
-      gramms: fields[1] as int?,
+      name: fields[0] == null ? '' : fields[0] as String?,
+      gramms: fields[1] == null ? 0 : fields[1] as int?,
     );
   }
 

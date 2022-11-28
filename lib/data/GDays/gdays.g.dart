@@ -17,7 +17,7 @@ class GDaysAdapter extends TypeAdapter<GDays> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return GDays(
-      days: (fields[0] as List?)?.cast<GoalDay>(),
+      days: fields[0] == null ? [] : (fields[0] as List?)?.cast<GoalDay>(),
     );
   }
 

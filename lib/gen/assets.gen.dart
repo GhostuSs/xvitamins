@@ -37,12 +37,18 @@ class $AssetsImagesGen {
   /// File path: assets/images/calendar.svg
   SvgGenImage get calendar => const SvgGenImage('assets/images/calendar.svg');
 
+  /// File path: assets/images/met.png
+  AssetGenImage get met => const AssetGenImage('assets/images/met.png');
+
+  /// File path: assets/images/notmet.png
+  AssetGenImage get notmet => const AssetGenImage('assets/images/notmet.png');
+
   /// File path: assets/images/onb.png
   AssetGenImage get onb => const AssetGenImage('assets/images/onb.png');
 
-  /// File path: assets/images/reallywant.svg
-  SvgGenImage get reallywant =>
-      const SvgGenImage('assets/images/reallywant.svg');
+  /// File path: assets/images/reallywant.png
+  AssetGenImage get reallywant =>
+      const AssetGenImage('assets/images/reallywant.png');
 
   /// File path: assets/images/settings.svg
   SvgGenImage get settings => const SvgGenImage('assets/images/settings.svg');
@@ -56,7 +62,7 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<dynamic> get values =>
-      [calendar, onb, reallywant, settings, trash, weeklyfacts];
+      [calendar, met, notmet, onb, reallywant, settings, trash, weeklyfacts];
 }
 
 class Assets {

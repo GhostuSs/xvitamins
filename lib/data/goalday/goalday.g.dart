@@ -18,10 +18,10 @@ class GoalDayAdapter extends TypeAdapter<GoalDay> {
     };
     return GoalDay(
       day: fields[0] as DateTime?,
-      note: fields[2] as String?,
-      food: (fields[1] as List?)?.cast<Food>(),
-      seen: fields[3] as bool?,
-      completed: fields[4] as bool?,
+      note: fields[2] == null ? '' : fields[2] as String?,
+      food: fields[1] == null ? [] : (fields[1] as List?)?.cast<Food>(),
+      seen: fields[3] == null ? false : fields[3] as bool?,
+      completed: fields[4] == null ? false : fields[4] as bool?,
     );
   }
 
