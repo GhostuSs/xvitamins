@@ -16,11 +16,11 @@ import '../../calendar/ui/calendar_screen.dart';
 
 class CurrentDayScreen extends StatefulWidget {
   final DateTime selected;
-  final GoalDay? day;
+  // final GoalDay? day;
   const CurrentDayScreen({
     Key? key,
     required this.selected,
-    this.day,
+    // this.day,
   }) : super(key: key);
 
   @override
@@ -67,36 +67,39 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
       }
     }
     super.initState();
-    if(widget.day?.seen!=true&&(widget.day?.day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true)){
-          Future.delayed(Duration.zero).then((value) => showDialog(
-            context: context,
-            builder: (_) => Dialog(
-              clipBehavior: Clip.hardEdge,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.r),
-              ),
-              child: CustomDialog(
-                label:
-                'Goal not met',
-                emojy: sum<Hive.box<int>('dailygoal').values.first&&widget.day?.day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true ? 'assets/images/notmet.png' : 'assets/images/met.png',
-                actions: const ['OK'], onYes: () async {
-                  final gday= widget.day;
-                  gday?.seen=true;
-                  Hive.box<GDays>('goals').values.first.days?.remove(widget.day);
-                  Hive.box<GDays>('goals').values.first.days?.add(gday!);
-                  final newData = Hive.box<GDays>('goals').values.first;
-                  // await Hive.box<GDays>('goals').clear();
-                  await Hive.box<GDays>('goals').put('goals', newData);
-                Navigator.pop(_);
-              },
-              ),
+    if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day==widget.selected).isNotEmpty==true){
+      if(Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).seen!=true&&(Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true)){
+        Future.delayed(Duration.zero).then((value) => showDialog(
+          context: context,
+          builder: (_) => Dialog(
+            clipBehavior: Clip.hardEdge,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.r),
             ),
-          ));
+            child: CustomDialog(
+              label:
+              'Goal not met',
+              emojy: sum<Hive.box<int>('dailygoal').values.first&&Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true ? 'assets/images/notmet.png' : 'assets/images/met.png',
+              actions: const ['OK'], onYes: () async {
+              final gday= Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected);
+              gday?.seen=true;
+              Hive.box<GDays>('goals').values.first.days?.remove(gday);
+              Hive.box<GDays>('goals').values.first.days?.add(gday!);
+              final newData = Hive.box<GDays>('goals').values.first;
+              // await Hive.box<GDays>('goals').clear();
+              await Hive.box<GDays>('goals').put('goals', newData);
+              Navigator.pop(_);
+            },
+            ),
+          ),
+        ));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    GoalDay? gday = Hive.box<GDays>('goals').values.first.days?.where((element) => element.day==widget.selected).isNotEmpty==true ? Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected) :GoalDay(day: widget.selected);
     return Container(
       decoration: BoxDecoration(
           border: Border(
@@ -165,6 +168,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                       height: 180.w,
                       child: DChartPie(
                         data: chartData,
+                        animate: false,
                         labelPosition: PieLabelPosition.auto,
                         showLabelLine: false,
                         labelPadding: 0,
@@ -208,9 +212,10 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                           ],
                         ),
                 ),
-                if (widget.day?.note != '' && widget.day?.note != null)
+                SizedBox(height: 24.h,),
+                if (gday?.note != '' && gday?.note != null)
                   NoteWidget(
-                    note: widget.day?.note! ?? '',
+                    note: gday?.note! ?? '',
                   ),
                 const Spacer(),
                 MainButton(
@@ -219,7 +224,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     MaterialPageRoute(
                       builder: (_) => AddScreen(
                         day: widget.selected,
-                        updateParent:()=>setState((){})
+                        updateParent: ()=>setState((){}),
                       ),
                     ),
                   ),
@@ -229,15 +234,14 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                 SizedBox(
                   height: 10.h,
                 ),
-                widget.day?.note == '' || widget.day?.note == null
+                gday?.note == '' || gday?.note == null
                     ? MainButton(
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => NoteScreen(
-                              note: widget.day?.note ?? '',
+                              note: gday?.note ?? '',
                               date: widget.selected,
-                              updateParent: ()=>setState((){}),
                             ),
                           ),
                         ),
@@ -251,9 +255,8 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => NoteScreen(
-                                  note: widget.day?.note ?? '',
+                                  note: gday?.note ?? '',
                                   date: widget.selected,
-                                  updateParent: ()=>setState(() {}),
                                   autofocus: true,
                                 ),
                               ),
@@ -276,7 +279,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                                     'Do you really want to delete this note?',
                                     emojy: 'assets/images/reallywant.png',
                                     actions: const ['Yes', 'No'],
-                                    onYes: () async => await deleteNote()),
+                                    onYes: () async => await deleteNote().then((value) => Navigator.pop(_))),
                               ),
                             ),
                             label: 'Delete Note',

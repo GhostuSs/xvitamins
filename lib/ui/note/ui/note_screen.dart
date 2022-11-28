@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
-import 'package:xvitamins/ui/current_day/ui/current_day.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
@@ -10,7 +9,6 @@ import 'package:xvitamins/utils/typography/app_typography.dart';
 import '../../../data/goalday/goalday.dart';
 
 class NoteScreen extends StatefulWidget {
-  final VoidCallback updateParent;
   final String note;
   final bool? autofocus;
   final DateTime date;
@@ -19,7 +17,6 @@ class NoteScreen extends StatefulWidget {
     required this.note,
     required this.date,
     this.autofocus,
-    required this.updateParent,
   }) : super(key: key);
 
   @override
@@ -34,7 +31,6 @@ class _NoteScreenState extends State<NoteScreen> {
   void initState() {
     controller = TextEditingController(text: widget.note ?? '');
     super.initState();
-    // Add code after super
   }
 
   @override
@@ -65,7 +61,9 @@ class _NoteScreenState extends State<NoteScreen> {
               Icons.arrow_back,
               color: AppColors.black,
             ),
-            onPressed: ()=>Navigator.pop(context),
+            onPressed: (){
+            Navigator.pop(context);
+            },
           ),
         ),
         body: SafeArea(
@@ -88,8 +86,7 @@ class _NoteScreenState extends State<NoteScreen> {
               if (changed)
                 MainButton(
                   onTap: () async {
-                    if (widget.note != '' &&
-                        Hive.box<GDays>('goals')
+                    if (Hive.box<GDays>('goals')
                                 .values
                                 .first
                                 .days
@@ -102,16 +99,15 @@ class _NoteScreenState extends State<NoteScreen> {
                       box.values.first.days?.removeWhere(
                           (element) => element.day == widget.date);
                       box.values.first.days!.add(gday);
-                      await box.put('goals', box.values.first);
+                      await Hive.box<GDays>('goals').put('goals', box.values.first);
                     } else {
                       final box = Hive.box<GDays>('goals');
                       final gday =
                           GoalDay(note: controller.text, day: widget.date);
                       box.values.first.days!.add(gday);
-                      await box.put('goals', box.values.first);
+                      await Hive.box<GDays>('goals').put('goals', box.values.first);
                     }
                     setState(() => changed = false);
-                    widget.updateParent();
                     FocusManager.instance.primaryFocus?.unfocus();
                     print('s');
                   },

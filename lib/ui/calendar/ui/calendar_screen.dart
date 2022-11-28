@@ -79,18 +79,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   MaterialPageRoute(
                     builder: (_) => CurrentDayScreen(
                       selected: day,
-                      day: Hive.box<GDays>('goals')
-                                  .values
-                                  .first
-                                  .days
-                                  ?.any((element) => element.day == day) ==
-                              true
-                          ? Hive.box<GDays>('goals')
-                              .values
-                              .first
-                              .days
-                              ?.firstWhere((elem) => elem.day == day)
-                          : GoalDay(day: day, note: ''),
+                      // day: Hive.box<GDays>('goals')
+                      //             .values
+                      //             .first
+                      //             .days
+                      //             ?.any((element) => element.day == day) ==
+                      //         true
+                      //     ? Hive.box<GDays>('goals')
+                      //         .values
+                      //         .first
+                      //         .days
+                      //         ?.firstWhere((elem) => elem.day == day)
+                      //     : GoalDay(day: day, note: ''),
                     ),
                   ),
                 ),
@@ -196,18 +196,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   MaterialPageRoute(
                     builder: (_) => CurrentDayScreen(
                       selected: today,
-                      day: Hive.box<GDays>('goals')
-                                  .values
-                                  .first
-                                  .days
-                                  ?.any((element) => element.day == today) ==
-                              true
-                          ? Hive.box<GDays>('goals')
-                              .values
-                              .first
-                              .days
-                              ?.firstWhere((elem) => elem.day == today)
-                          : GoalDay(day: today, note: ''),
+                      // day: Hive.box<GDays>('goals')
+                      //             .values
+                      //             .first
+                      //             .days
+                      //             ?.any((element) => element.day == today) ==
+                      //         true
+                      //     ? Hive.box<GDays>('goals')
+                      //         .values
+                      //         .first
+                      //         .days
+                      //         ?.firstWhere((elem) => elem.day == today)
+                      //     : GoalDay(day: today, note: ''),
                     ),
                   ),
                 ),
