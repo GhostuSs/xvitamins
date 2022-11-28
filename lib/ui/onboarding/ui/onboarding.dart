@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:xvitamins/data/urls.dart';
 import 'package:xvitamins/ui/main/ui/main_screen.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -106,7 +108,7 @@ class Onboarding extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           InkWell(
-                            onTap: () {},
+                            onTap: ()=>launchUrl(Uri.parse(BaseUrls.terms)),
                             child: Text(
                               'TERMS OF USE',
                               style: AppTypography.regular.copyWith(
@@ -116,7 +118,7 @@ class Onboarding extends StatelessWidget {
                             ),
                           ),
                           InkWell(
-                            onTap: () {},
+                            onTap: () async =>await Hive.box<bool>('premium').put('premium', true),
                             child: Text(
                               'RESTORE',
                               style: AppTypography.regular.copyWith(
@@ -126,7 +128,7 @@ class Onboarding extends StatelessWidget {
                             ),
                           ),
                           InkWell(
-                            onTap: () {},
+                            onTap: ()=>launchUrl(Uri.parse(BaseUrls.privacy)),
                             child: Text(
                               'PRIVACY POLICY',
                               style: AppTypography.regular.copyWith(

@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
+import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/ui/current_day/ui/current_day.dart';
 import 'package:xvitamins/ui/onboarding/ui/onboarding.dart';
@@ -226,9 +227,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if(date.day==DateTime.now().day&&date.month==DateTime.now().month&&date.year==DateTime.now().year)return AppColors.blue;
     if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year).isNotEmpty==true){
       final gday=Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year);
-      return gday?.completed==true ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true&&gday?.note!='' ?  AppColors.red : gday?.note!=null&&gday?.note!='' ? AppColors.black : Colors.transparent;
+      return gday?.completed==true&&checksum(gday?.food ?? []) ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true&&gday?.note!='' ?  AppColors.red : gday?.note!=null&&gday?.note!='' ? AppColors.black : AppColors.red;
     }
     return Colors.transparent;
+  }
+
+  bool checksum(List<Food> food){
+    int sum =0;
+    for(final data in food){
+      sum+=data.gramms!;
+    }
+    if(sum>=Hive.box<int>('dailygoal').values.first){
+      return true;
+    }else{
+      return false;
+    }
   }
 
   String dayLabels(DateTime date){

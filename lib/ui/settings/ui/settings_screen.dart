@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
+import 'package:xvitamins/data/urls.dart';
+import 'package:xvitamins/ui/main/ui/main_screen.dart';
 import 'package:xvitamins/ui/settings/uikit/settings_button.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -67,14 +70,17 @@ class SettingsScreen extends StatelessWidget {
                     builder: (_) => GoalDialog(),
                   ),
                 ),
-              const SettingsButton(
+              SettingsButton(
                 label: 'Privacy Policy',
+                onTap: ()=>launchUrl(Uri.parse(BaseUrls.privacy)),
               ),
-              const SettingsButton(
+              SettingsButton(
                 label: 'Terms of Use',
+                onTap: ()=>launchUrl(Uri.parse(BaseUrls.terms)),
               ),
-              const SettingsButton(
+              SettingsButton(
                 label: 'Support',
+                onTap: ()=>launchUrl(Uri.parse(BaseUrls.support)),
               ),
             ],
           ),
@@ -161,6 +167,7 @@ class _GoalDialogState extends State<GoalDialog> {
                   }
                 }
                 Navigator.pop(context);
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>MainScreen()));
               },
               label: 'OK',
               mainType: true,
