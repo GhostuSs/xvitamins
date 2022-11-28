@@ -16,6 +16,7 @@ class CustomNavBarWidget extends StatelessWidget {
   Widget _buildItem(
       PersistentBottomNavBarItem item, bool isSelected) {
     return Container(
+      padding:EdgeInsets.only(top: 5.0.h),
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +32,7 @@ class CustomNavBarWidget extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 6.0.h),
+            padding: EdgeInsets.only(top: 4.0.h),
             child: Material(
               type: MaterialType.transparency,
               child: FittedBox(

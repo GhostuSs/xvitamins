@@ -29,7 +29,7 @@ class _MainScreenState extends State<MainScreen> {
         items: _buildItems(),
         itemCount: 3,
         resizeToAvoidBottomInset: false,
-        navBarHeight: 45.h,
+        // navBarHeight: 45.h,
         customWidget: (navbarEss) => CustomNavBarWidget(
           items: _buildItems(),
           onItemSelected: (int value) => controller.index==value ? null : setState(() {
@@ -51,11 +51,11 @@ class _MainScreenState extends State<MainScreen> {
     return [
       PersistentBottomNavBarItem(
         icon: Assets.images.calendar.svg(
-          width: 24.w,
+          width: 23.w,
           color: colorSelector(0),
         ),
         inactiveIcon: Assets.images.calendar.svg(
-          width: 24.w,
+          width: 23.w,
           color: colorSelector(0),
         ),
         title: 'Calendar',
@@ -64,11 +64,11 @@ class _MainScreenState extends State<MainScreen> {
       ),
       PersistentBottomNavBarItem(
         icon: Assets.images.weeklyfacts.svg(
-          width: 24.w,
+          width: 23.w,
           color: colorSelector(1),
         ),
         inactiveIcon: Assets.images.weeklyfacts.svg(
-          width: 24.w,
+          width: 23.w,
           color: colorSelector(1),
         ),
         contentPadding: 0.0,
@@ -76,9 +76,9 @@ class _MainScreenState extends State<MainScreen> {
         textStyle: _style(controller.index == 1),
       ),
       PersistentBottomNavBarItem(
-        icon: Assets.images.settings.svg(width: 24.w, color: colorSelector(2)),
+        icon: Assets.images.settings.svg(width: 23.w, color: colorSelector(2)),
         inactiveIcon:
-            Assets.images.settings.svg(width: 24.w, color: colorSelector(2)),
+            Assets.images.settings.svg(width: 23.w, color: colorSelector(2)),
         title: 'Settings',
         contentPadding: 0.0,
         textStyle: _style(controller.index == 2),

@@ -107,12 +107,11 @@ class _GoalDialogState extends State<GoalDialog> {
         borderRadius: BorderRadius.circular(25.r),
       ),
       child: Container(
-        width: 343.w,
-        height: 310.h,
-        padding: EdgeInsets.all(36.w),
+        padding: const EdgeInsets.all(36),
         decoration: BoxDecoration(
             color: AppColors.white, borderRadius: BorderRadius.circular(25.r)),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -140,7 +139,7 @@ class _GoalDialogState extends State<GoalDialog> {
               haptics: true,
               onChanged: (value) => setState(() => _currentIntValue = value),
             ),
-            const Spacer(),
+            SizedBox(height: 24.h,),
             MainButton(
               onTap: () async {
                 //TODO:Доработать условие изменения

@@ -112,6 +112,8 @@ class _AddScreenState extends State<AddScreen> {
                     controller: grammcontroller,
                     textAlignVertical: TextAlignVertical.center,
                     textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    readOnly: true,
                     style: AppTypography.regular.copyWith(
                         fontSize: 14.w,
                         fontWeight: FontWeight.w500,
@@ -287,7 +289,7 @@ class _AddScreenState extends State<AddScreen> {
         name: namecontroller.text,
         gramms: int.parse(grammcontroller.text),
       );
-      gday.food!.add(newFood);
+      gday.food?.add(newFood);
       gday.food?.sort((a,b)=>b.gramms!.compareTo(a.gramms!));
 
       Hive.box<GDays>('goals').values.first.days?.add(gday);
@@ -297,7 +299,7 @@ class _AddScreenState extends State<AddScreen> {
         print(sum);
         return true;
       });
-      if(sum>=400)gday.completed=true;
+      if(sum>=Hive.box<int>('dailygoal').values.first)gday.completed=true;
       final gdays = Hive.box<GDays>('goals').values.first;
       await Hive.box<GDays>('goals').clear();
       await Hive.box<GDays>('goals').put('goals', gdays);
@@ -310,7 +312,7 @@ class _AddScreenState extends State<AddScreen> {
             gramms: int.parse(grammcontroller.text),
           )
         ],
-        completed: (int.parse(grammcontroller.text)>=400) ? true : null,
+        completed: (int.parse(grammcontroller.text)>=Hive.box<int>('dailygoal').values.first) ? true : null,
       );
       Hive.box<GDays>('goals').values.first.days?.add(gday);
       final newData = Hive.box<GDays>('goals').values.first;

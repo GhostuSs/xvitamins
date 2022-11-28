@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
+import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/ui/current_day/uikit/note_widget.dart';
 import 'package:xvitamins/ui/note/ui/note_screen.dart';
@@ -49,57 +50,114 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
           []);
       final data = List.generate(
           list.length,
-          (index) =>
-              {"domain": " ${list[index].name}   $index", "measure": list[index].gramms});
+          (index) => {
+                "domain": " ${list[index].name}   $index",
+                "measure": list[index].gramms
+              });
       for (int i = 0; i < data.length; i++) {
         sum += data[i]['measure'] as int;
       }
-      data.sort((a,b)=>(b['measure'] as int).compareTo(a['measure'] as int));
-      if (Hive.box<int>('dailygoal').values.first-sum > 0) {
-        data.add({"domain": "left", "measure": Hive.box<int>('dailygoal').values.first - sum});
+      data.sort((a, b) => (b['measure'] as int).compareTo(a['measure'] as int));
+      if (Hive.box<int>('dailygoal').values.first - sum > 0) {
+        data.add({
+          "domain": "left",
+          "measure": Hive.box<int>('dailygoal').values.first - sum
+        });
       }
       chartData = data;
     } else {
-      if(sum==0) {
+      if (sum == 0) {
         chartData = [
-        {"domain": 'left', "measure": Hive.box<int>('dailygoal').values.first}
-      ];
+          {"domain": 'left', "measure": Hive.box<int>('dailygoal').values.first}
+        ];
       }
     }
     super.initState();
-    if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day==widget.selected).isNotEmpty==true){
-      if(Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).seen!=true&&(Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true)){
+    if (Hive.box<GDays>('goals')
+            .values
+            .first
+            .days
+            ?.where((element) => element.day == widget.selected)
+            .isNotEmpty ==
+        true) {
+      if (Hive.box<GDays>('goals')
+                  .values
+                  .first
+                  .days
+                  ?.firstWhere((element) => element.day == widget.selected)
+                  .seen !=
+              true &&
+          (Hive.box<GDays>('goals')
+                  .values
+                  .first
+                  .days
+                  ?.firstWhere((element) => element.day == widget.selected)
+                  .day
+                  ?.isBefore(DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day)) ==
+              true)) {
         Future.delayed(Duration.zero).then((value) => showDialog(
-          context: context,
-          builder: (_) => Dialog(
-            clipBehavior: Clip.hardEdge,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.r),
-            ),
-            child: CustomDialog(
-              label:
-              'Goal not met',
-              emojy: sum<Hive.box<int>('dailygoal').values.first&&Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected).day?.isBefore(DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day))==true ? 'assets/images/notmet.png' : 'assets/images/met.png',
-              actions: const ['OK'], onYes: () async {
-              final gday= Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected);
-              gday?.seen=true;
-              Hive.box<GDays>('goals').values.first.days?.remove(gday);
-              Hive.box<GDays>('goals').values.first.days?.add(gday!);
-              final newData = Hive.box<GDays>('goals').values.first;
-              // await Hive.box<GDays>('goals').clear();
-              await Hive.box<GDays>('goals').put('goals', newData);
-              Navigator.pop(_);
-            },
-            ),
-          ),
-        ));
+              context: context,
+              builder: (_) => Dialog(
+                clipBehavior: Clip.hardEdge,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.r),
+                ),
+                child: CustomDialog(
+                  label: 'Goal not met',
+                  emojy: sum < Hive.box<int>('dailygoal').values.first &&
+                          Hive.box<GDays>('goals')
+                                  .values
+                                  .first
+                                  .days
+                                  ?.firstWhere((element) =>
+                                      element.day == widget.selected)
+                                  .day
+                                  ?.isBefore(DateTime(
+                                      DateTime.now().year,
+                                      DateTime.now().month,
+                                      DateTime.now().day)) ==
+                              true
+                      ? 'assets/images/notmet.png'
+                      : 'assets/images/met.png',
+                  actions: const ['OK'],
+                  onYes: () async {
+                    final gday = Hive.box<GDays>('goals')
+                        .values
+                        .first
+                        .days
+                        ?.firstWhere(
+                            (element) => element.day == widget.selected);
+                    gday?.seen = true;
+                    Hive.box<GDays>('goals').values.first.days?.remove(gday);
+                    Hive.box<GDays>('goals').values.first.days?.add(gday!);
+                    final newData = Hive.box<GDays>('goals').values.first;
+                    // await Hive.box<GDays>('goals').clear();
+                    await Hive.box<GDays>('goals').put('goals', newData);
+                    Navigator.pop(_);
+                  },
+                ),
+              ),
+            ));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    GoalDay? gday = Hive.box<GDays>('goals').values.first.days?.where((element) => element.day==widget.selected).isNotEmpty==true ? Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day==widget.selected) :GoalDay(day: widget.selected);
+    GoalDay? gday = Hive.box<GDays>('goals')
+                .values
+                .first
+                .days
+                ?.where((element) => element.day == widget.selected)
+                .isNotEmpty ==
+            true
+        ? Hive.box<GDays>('goals')
+            .values
+            .first
+            .days
+            ?.firstWhere((element) => element.day == widget.selected)
+        : GoalDay(day: widget.selected);
     return Container(
       decoration: BoxDecoration(
           border: Border(
@@ -126,7 +184,8 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               Icons.arrow_back,
               color: AppColors.black,
             ),
-            onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const CalendarScreen())),
+            onPressed: () => Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (_) => const CalendarScreen())),
           ),
         ),
         body: SafeArea(
@@ -175,21 +234,26 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                         strokeWidth: 0,
                         labelColor: Colors.transparent,
                         fillColor: (pieData, index) =>
-                            sum < Hive.box<int>('dailygoal').values.first && pieData['domain'] == 'left'
+                            sum < Hive.box<int>('dailygoal').values.first &&
+                                    pieData['domain'] == 'left'
                                 ? AppColors.emptyGoals
                                 : colorSelector(index: index),
                         donutWidth: 20,
                       ),
                     ),
                     sum < Hive.box<int>('dailygoal').values.first
-                        ? Text(
+                        ? widget.selected.isAfter(DateUtils.dateOnly(DateTime.now())) ? Text(
                             '$sum/${Hive.box<int>('dailygoal').values.first}',
-                           style: AppTypography.bold.copyWith(
+                            style: AppTypography.bold.copyWith(
                               fontWeight: FontWeight.w700,
                               fontSize: 20.w,
                               color: AppColors.black,
                             ),
-                          )
+                          ) : Icon(
+                      Icons.clear,
+                      color: AppColors.red,
+                      size: 80.r,
+                    )
                         : Icon(
                             Icons.check,
                             color: AppColors.green,
@@ -202,17 +266,43 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                   child: chartData.length == 1
                       ? Center(
                           child: FoodWidget(
-                              data: chartData.first, chartData: chartData,sum: sum,),
+                            data: chartData.first,
+                            chartData: chartData,
+                            sum: sum,
+                            onTap: (){},
+                          ),
                         )
                       : ListView(
                           scrollDirection: Axis.horizontal,
                           children: [
                             for (var data in chartData)
-                              FoodWidget(data: data, chartData: chartData,sum: sum,)
+                              FoodWidget(
+                                data: data,
+                                chartData: chartData,
+                                sum: sum,
+                                  onTap:()=>showDialog(
+                                    context: context,
+                                    builder: (_) => Dialog(
+                                      clipBehavior: Clip.hardEdge,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25.r),
+                                      ),
+                                      child: CustomDialog(
+                                        label:
+                                        'Do you really want to delete this item?',
+                                        emojy: 'assets/images/reallywant.png',
+                                        actions: const ['Yes', 'No'],
+                                        onYes: () async => await delete(Hive.box<GDays>('goals').values.first.days!.firstWhere((element) => element.day==widget.selected).food!.firstWhere((element) => element.name?.trim()==data['domain'].split('   ').first.trim())).then((value) => Navigator.pop(_)),
+                                      ),
+                                    ),
+                                  ),
+                              )
                           ],
                         ),
                 ),
-                SizedBox(height: 24.h,),
+                SizedBox(
+                  height: 24.h,
+                ),
                 if (gday?.note != '' && gday?.note != null)
                   NoteWidget(
                     note: gday?.note! ?? '',
@@ -224,7 +314,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     MaterialPageRoute(
                       builder: (_) => AddScreen(
                         day: widget.selected,
-                        updateParent: ()=>setState((){}),
+                        updateParent: () => setState(() {}),
                       ),
                     ),
                   ),
@@ -276,12 +366,13 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                                 ),
                                 child: CustomDialog(
                                     label:
-                                    'Do you really want to delete this note?',
+                                        'Do you really want to delete this note?',
                                     emojy: 'assets/images/reallywant.png',
                                     actions: const ['Yes', 'No'],
-                                    onYes: () async => await deleteNote().then((value) => Navigator.pop(_))),
+                                    onYes: () async => await deleteNote()
+                                        .then((value) => Navigator.pop(_))),
                               ),
-                            ),
+                            ).then((value) => setState((){})),
                             label: 'Delete Note',
                             width: 155.w,
                             customColor: AppColors.red,
@@ -295,6 +386,23 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> delete(Food data) async {
+    Hive.box<GDays>('goals')
+        .values
+        .first
+        .days
+        ?.where((element) =>
+    element.day == widget.selected)
+        .first
+        .food
+        ?.remove(data);
+    final newData =
+        Hive.box<GDays>('goals').values.first;
+    await Hive.box<GDays>('goals').clear();
+    await Hive.box<GDays>('goals')
+        .put('goals', newData);
   }
 
   ///Convert datetime to day+month
@@ -375,7 +483,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
   }
 }
 
-Color colorSelector({index}){
+Color colorSelector({index}) {
   Color color = AppColors.gray3;
   switch (index) {
     case 0:
@@ -416,8 +524,14 @@ class FoodWidget extends StatelessWidget {
   final Map<String, dynamic> data;
   final List<Map<String, dynamic>> chartData;
   final int sum;
-  const FoodWidget({Key? key, required this.data, required this.chartData, required this.sum,})
-      : super(key: key);
+  final VoidCallback onTap;
+  const FoodWidget({
+    Key? key,
+    required this.data,
+    required this.chartData,
+    required this.sum,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -426,40 +540,50 @@ class FoodWidget extends StatelessWidget {
         top: 16.h,
         right: 16.w,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 5.w),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: data['domain'] == 'left'
-                  ? AppColors.emptyGoals
-                  : colorSelector(index:chartData.indexOf(data)),
-            ),
-            child: Center(
-              child: Text(
-                '${((data['measure'] /(sum<=Hive.box<int>('dailygoal').values.first ? Hive.box<int>('dailygoal').values.first : sum)) * 100).round()}%',
-                style: AppTypography.bold.copyWith(
-                  fontSize: 12.w,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.white,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 5.w),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: data['domain'] == 'left'
+                    ? AppColors.emptyGoals
+                    : colorSelector(index: chartData.indexOf(data)),
+              ),
+              child: Center(
+                child: Text(
+                  '${((data['measure'] / (sum <= Hive.box<int>('dailygoal').values.first ? Hive.box<int>('dailygoal').values.first : sum)) * 100).round()}%',
+                  style: AppTypography.bold.copyWith(
+                    fontSize: 12.w,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Text(
-              data['domain'].split('   ').first + ' (' + data['measure'].toString() + "g)",
-              style: AppTypography.medium.copyWith(
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text(
+                data['domain'].split('   ').first +
+                    ' (' +
+                    data['measure'].toString() +
+                    "g)",
+                style: AppTypography.medium.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 16.w,
                   color: AppColors.black,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
