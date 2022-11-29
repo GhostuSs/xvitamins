@@ -9,7 +9,7 @@ class WeeklyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return WillPopScope(child: Container(
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
@@ -39,11 +39,12 @@ class WeeklyScreen extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                   fontSize: 16.w,
                 ),
-              )
+              ),
+              SizedBox(height: 30.h,),
             ],
           ),
         ),
       ),
-    );
+    ), onWillPop: ()async=>false);
   }
 }

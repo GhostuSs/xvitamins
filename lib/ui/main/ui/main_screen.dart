@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   PersistentTabController controller = PersistentTabController(initialIndex: 0);
   @override
   Widget build(BuildContext context){
-    return Scaffold(
+    return WillPopScope(child: Scaffold(
       body: PersistentTabView.custom(
         context,
         controller: controller,
@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
           selectedIndex: controller.index,
         ),
       ),
-    );
+    ), onWillPop: ()async=>false);
   }
 
   List<PersistentBottomNavBarItem> _buildItems() {

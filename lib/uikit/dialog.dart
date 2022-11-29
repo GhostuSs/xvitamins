@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
 
-import '../gen/assets.gen.dart';
 import '../utils/colors/colors.dart';
 
 class CustomDialog extends StatelessWidget {
@@ -25,8 +24,8 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
-      constraints: BoxConstraints.expand(width: 343.w, height: 346.h),
-      padding: EdgeInsets.symmetric(vertical: 36.h, horizontal: 20.w),
+      constraints: const BoxConstraints.expand(height: 317),
+      padding: EdgeInsets.symmetric(vertical: 36.h, horizontal: 14.w),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(25.r),
@@ -42,10 +41,10 @@ class CustomDialog extends StatelessWidget {
               color: AppColors.black,
             ),
           ),
-          SizedBox(height:24.h),
+          const SizedBox(height:24),
           Image.asset(
             emojy,
-            height: 120.h,
+            height: 120,
           ),
           const Spacer(),
           Row(

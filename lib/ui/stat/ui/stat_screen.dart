@@ -27,8 +27,9 @@ class _StatScreenState extends State<StatScreen> {
       for (final Food data in days.food ?? []) {
         sum = sum + (data.gramms)!;
       }
-      if (days.completed == true && days.day?.month == DateTime.now().month)
+      if (days.completed == true && days.day?.month == DateTime.now().month) {
         completed++;
+      }
     }
     super.initState();
   }
@@ -120,7 +121,7 @@ class _StatScreenState extends State<StatScreen> {
   int countSum(int month){
     int sum =0;
     if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day?.month==month).isNotEmpty==true){
-      for(final GoalDay data in (Hive.box<GDays>('goals').values.first.days!.where((element) => element.day!.month==month).toList()??[])){
+      for(final GoalDay data in (Hive.box<GDays>('goals').values.first.days!.where((element) => element.day!.month==month).toList())){
         for(final Food food in data.food??[]){
           sum=sum+food.gramms!;
         }

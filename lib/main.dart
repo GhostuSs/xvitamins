@@ -28,6 +28,7 @@ Future<void> main() async {
   await Hive.openBox<GDays>('goals');
   await Hive.openBox<bool>('premium');
   await Hive.openBox<int>('dailygoal');
+
   if(Hive.box<int>('dailygoal').isEmpty==true){
     await Hive.box<int>('dailygoal').put('dailygoal', 400);
   }
@@ -38,6 +39,7 @@ Future<void> main() async {
     if (kDebugMode) {
       print('empty data');
     }
+
     await Hive.box<GDays>('goals').put(
       'goals',
       GDays(

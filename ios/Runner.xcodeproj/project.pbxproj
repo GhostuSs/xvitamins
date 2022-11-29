@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -121,7 +121,6 @@
 				DD59673BF64C8AA3C54695F2 /* Pods-Runner.release.xcconfig */,
 				579C495E9A2F6B8A29E9616F /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -361,7 +360,7 @@
 				DEVELOPMENT_TEAM = B2W9VH48MQ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "1xVitamins: Diary";
+				INFOPLIST_KEY_CFBundleDisplayName = "1xVitamins : Diary";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -499,7 +498,7 @@
 				DEVELOPMENT_TEAM = B2W9VH48MQ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "1xVitamins: Diary";
+				INFOPLIST_KEY_CFBundleDisplayName = "1xVitamins : Diary";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -529,7 +528,7 @@
 				DEVELOPMENT_TEAM = B2W9VH48MQ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "1xVitamins: Diary";
+				INFOPLIST_KEY_CFBundleDisplayName = "1xVitamins : Diary";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
+import 'package:xvitamins/ui/current_day/ui/current_day.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
@@ -11,12 +12,13 @@ import '../../../data/goalday/goalday.dart';
 class NoteScreen extends StatefulWidget {
   final String note;
   final bool? autofocus;
+  final VoidCallback updateParent;
   final DateTime date;
   const NoteScreen({
     Key? key,
     required this.note,
     required this.date,
-    this.autofocus,
+    this.autofocus, required this.updateParent,
   }) : super(key: key);
 
   @override
@@ -29,7 +31,7 @@ class _NoteScreenState extends State<NoteScreen> {
 
   @override
   void initState() {
-    controller = TextEditingController(text: widget.note ?? '');
+    controller = TextEditingController(text: widget.note);
     super.initState();
   }
 
@@ -61,8 +63,8 @@ class _NoteScreenState extends State<NoteScreen> {
               Icons.arrow_back,
               color: AppColors.black,
             ),
-            onPressed: (){
-            Navigator.pop(context);
+            onPressed: () async {
+              await Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: widget.date))).then((value) => setState((){}));
             },
           ),
         ),
@@ -78,8 +80,15 @@ class _NoteScreenState extends State<NoteScreen> {
                   onChanged: (s) =>
                       changed == false ? setState(() => changed = true) : null,
                   autofocus: widget.autofocus ?? false,
+                  maxLength: 145,
+                  maxLines: 5,
+                  style: AppTypography.medium.copyWith(
+                    fontSize: 14.w,
+                    fontWeight: FontWeight.w500,
+                  ),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
+                    counter: SizedBox(height: 0,),
                   ),
                 ),
               ),
@@ -109,7 +118,6 @@ class _NoteScreenState extends State<NoteScreen> {
                     }
                     setState(() => changed = false);
                     FocusManager.instance.primaryFocus?.unfocus();
-                    print('s');
                   },
                   label: 'Save',
                   mainType: true,

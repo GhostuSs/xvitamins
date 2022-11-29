@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
 import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/gen/assets.gen.dart';
 import 'package:xvitamins/ui/current_day/ui/current_day.dart';
+import 'package:xvitamins/ui/main/ui/main_screen.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
@@ -15,7 +17,8 @@ import '../../../uikit/dialog.dart';
 class AddScreen extends StatefulWidget {
   final DateTime day;
   final VoidCallback updateParent;
-  const AddScreen({Key? key, required this.day, required this.updateParent,}) : super(key: key);
+  final bool? fromHome;
+  const AddScreen({Key? key, required this.day, required this.updateParent, this.fromHome,}) : super(key: key);
 
   @override
   State<AddScreen> createState() => _AddScreenState();
@@ -24,16 +27,34 @@ class AddScreen extends StatefulWidget {
 class _AddScreenState extends State<AddScreen> {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController grammcontroller = TextEditingController(text: '100');
+
+  @override
+  void initState() {
+    grammcontroller.addListener(() {
+      if(grammcontroller.text.isNotEmpty==true){
+      if(int.parse(grammcontroller.text.trim())==0) {
+        setState(()=>canAdd=false);
+      }else{
+        setState(() {
+          if(namecontroller.text.isNotEmpty==true)canAdd=true;
+        });
+      }
+    }else{
+        grammcontroller.text='0';
+      }
+    });
+    super.initState();
+  }
   bool canAdd = false;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return WillPopScope(child: Container(
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
-        color: AppColors.gray2,
-        width: 0.5.w,
-      ))),
+                color: AppColors.gray2,
+                width: 0.5.w,
+              ))),
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(
@@ -54,9 +75,7 @@ class _AddScreenState extends State<AddScreen> {
               color: AppColors.black,
             ),
             onPressed: () => {
-              // Navigator.pop(context),
-              // Navigator.pop(context),
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: widget.day)))
+              widget.fromHome==true ? pushNewScreen(context, screen: const MainScreen(),withNavBar: false) : Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> CurrentDayScreen(selected: widget.day,)))
             },
           ),
         ),
@@ -67,17 +86,22 @@ class _AddScreenState extends State<AddScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 16),
+                padding: const EdgeInsets.only(top: 10, bottom: 12),
                 child: TextField(
                   controller: namecontroller,
-                  textAlignVertical: TextAlignVertical.center,
+                  textAlignVertical: TextAlignVertical.bottom,
                   textAlign: TextAlign.center,
-                  onChanged: (s) => setState(
-                      () => canAdd = namecontroller.text.isNotEmpty == true),
+                  maxLength: 20,
+                  onChanged: (s){
+                    setState(
+                          () => canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0,
+                    );
+                  },
                   style: AppTypography.regular.copyWith(
                       fontSize: 14.w,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.black),
+                      color: AppColors.black,
+                  ),
                   decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
@@ -86,9 +110,10 @@ class _AddScreenState extends State<AddScreen> {
                       filled: true,
                       fillColor: AppColors.gray3,
                       hintText: 'What did you eat?',
+                      counter: const SizedBox(height: 0,),
                       alignLabelWithHint: true,
                       constraints: BoxConstraints.expand(
-                        height: 48.h,
+                        height: 55.h,
                       ),
                       hintStyle: AppTypography.regular.copyWith(
                         fontSize: 14.w,
@@ -99,25 +124,35 @@ class _AddScreenState extends State<AddScreen> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GrammButton(
-                    onTap: () => setState(
-                      () => int.parse(grammcontroller.text) > 10
+                    onTap: () {
+                      setState(
+                          (){int.parse(grammcontroller.text) > 10
                           ? grammcontroller.text =
-                              (int.parse(grammcontroller.text) - 10).toString()
-                          : null,
-                    ),
+                          (int.parse(grammcontroller.text) - 10).toString()
+                          : null;
+                          canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0;
+                          },
+                    );
+                      grammcontroller.selection = TextSelection.fromPosition(TextPosition(offset: grammcontroller.text.length));
+                    },
                   ),
                   TextField(
                     controller: grammcontroller,
                     textAlignVertical: TextAlignVertical.center,
                     textAlign: TextAlign.center,
+                    cursorColor: AppColors.blue,
                     keyboardType: TextInputType.number,
-                    readOnly: true,
+                    // readOnly: true,
+                    maxLines: 1,
+                    maxLength: 5,
                     style: AppTypography.regular.copyWith(
                         fontSize: 14.w,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.black),
+                        color: AppColors.black,
+                    ),
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.r),
@@ -133,8 +168,9 @@ class _AddScreenState extends State<AddScreen> {
                         filled: true,
                         fillColor: AppColors.gray3,
                         alignLabelWithHint: true,
+                        counter: const SizedBox(height: 0,),
                         constraints:
-                            BoxConstraints.expand(height: 48.w, width: 215.w),
+                        BoxConstraints.expand(height: 55.w, width: 215.w),
                         hintStyle: AppTypography.regular.copyWith(
                           fontSize: 14.w,
                           fontWeight: FontWeight.w500,
@@ -143,12 +179,18 @@ class _AddScreenState extends State<AddScreen> {
                   ),
                   GrammButton(
                     additional: true,
-                    onTap: () => setState(
-                      () => int.parse(grammcontroller.text) > 0
+                    onTap: (){
+                      grammcontroller.text.length<=99990 ? setState(
+                          (){
+                            int.parse(grammcontroller.text) >= 0
                           ? grammcontroller.text =
-                              (int.parse(grammcontroller.text) + 10).toString()
-                          : null,
-                    ),
+                          (int.parse(grammcontroller.text) + 10).toString()
+                          : null;
+                            canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0;
+                          },
+                    ): null;
+                    grammcontroller.selection = TextSelection.fromPosition(TextPosition(offset: grammcontroller.text.length));
+                    },
                   ),
                 ],
               ),
@@ -156,31 +198,31 @@ class _AddScreenState extends State<AddScreen> {
                 height: 16,
               ),
               MainButton(
-                onTap: () async => await add().then((value) => setState(() {})),
+                onTap: () async => (int.parse(grammcontroller.text)>0&&grammcontroller.text.length<6&&canAdd==true) ? await add().then((value) => setState(() {})) : null,
                 label: 'Add',
                 mainType: true,
-                customColor: canAdd
+                customColor: canAdd&&int.parse(grammcontroller.text)>0
                     ? AppColors.blue
                     : const Color.fromRGBO(172, 172, 176, 1),
               ),
               const SizedBox(height: 32),
               if (Hive.box<GDays>('goals')
-                      .values
-                      .first
-                      .days
-                      ?.where((element) => element.day == widget.day)
-                      .isNotEmpty ==
+                  .values
+                  .first
+                  .days
+                  ?.where((element) => element.day == widget.day)
+                  .isNotEmpty ==
                   true)
                 Expanded(
                   child: ListView(
                     children: [
                       for (final data in (Hive.box<GDays>('goals')
-                              .values
-                              .first
-                              .days
-                              ?.where((element) => element.day == widget.day)
-                              .first
-                              .food ??
+                          .values
+                          .first
+                          .days
+                          ?.where((element) => element.day == widget.day)
+                          .first
+                          .food ??
                           []))
                         Padding(
                           padding: const EdgeInsets.only(bottom: 32),
@@ -192,28 +234,35 @@ class _AddScreenState extends State<AddScreen> {
                                 decoration: BoxDecoration(
                                     color: colorSelector(
                                         index: (Hive.box<GDays>('goals')
-                                                    .values
-                                                    .first
-                                                    .days
-                                                    ?.where((element) =>
-                                                        element.day ==
-                                                        widget.day)
-                                                    .first
-                                                    .food ??
-                                                [])
+                                            .values
+                                            .first
+                                            .days
+                                            ?.where((element) =>
+                                        element.day ==
+                                            widget.day)
+                                            .first
+                                            .food ??
+                                            [])
                                             .indexOf(data)),
                                     shape: BoxShape.circle),
                               ),
                               SizedBox(width: 12.w),
-                              Text(
-                                data.name +
-                                    ' (' +
-                                    data.gramms.toString() +
-                                    "g)",
-                                style: AppTypography.medium.copyWith(
-                                  fontSize: 16.w,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              Wrap(
+                                children: [
+                                  SizedBox(
+                                    width: 250.w,
+                                    child: Text(
+                                      data.name +
+                                          ' (' +
+                                          data.gramms.toString() +
+                                          "g)",
+                                      style: AppTypography.medium.copyWith(
+                                        fontSize: 16.w,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                               const Spacer(),
                               InkWell(
@@ -247,7 +296,7 @@ class _AddScreenState extends State<AddScreen> {
           ),
         ),
       ),
-    );
+    ), onWillPop: ()async=>false);
   }
 
   Future<void> delete(Food data) async {
@@ -273,7 +322,7 @@ class _AddScreenState extends State<AddScreen> {
             .values
             .first
             .days
-            ?.any((element) => element.day == widget.day) ==
+            ?.where((element) => element.day == widget.day).isNotEmpty ==
         true) {
       GoalDay gday = (Hive.box<GDays>('goals')
           .values
@@ -296,7 +345,6 @@ class _AddScreenState extends State<AddScreen> {
       int sum=0;
       gday.food?.every((element){
         sum+=element.gramms??0;
-        print(sum);
         return true;
       });
       if(sum>=Hive.box<int>('dailygoal').values.first)gday.completed=true;
@@ -321,6 +369,7 @@ class _AddScreenState extends State<AddScreen> {
     }
     namecontroller.clear();
     grammcontroller.text = '100';
+    canAdd=false;
     widget.updateParent();
   }
 }

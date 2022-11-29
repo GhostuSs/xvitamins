@@ -5,7 +5,6 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/data/urls.dart';
-import 'package:xvitamins/ui/main/ui/main_screen.dart';
 import 'package:xvitamins/ui/settings/uikit/settings_button.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -58,7 +57,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               if (Hive.box<bool>('premium').values.first == false)
                 SettingsButton(
-                  label: 'Buy Premium😎',
+                  label: 'Get Premium😎',
                   isPrem: true,
                   onTap: () => navigateToOnb(),
                 ),
@@ -67,7 +66,7 @@ class SettingsScreen extends StatelessWidget {
                   label: 'Set the Goal',
                   onTap: () => showDialog(
                     context: context,
-                    builder: (_) => GoalDialog(),
+                    builder: (_) => const GoalDialog(),
                   ),
                 ),
               SettingsButton(
@@ -113,7 +112,7 @@ class _GoalDialogState extends State<GoalDialog> {
         borderRadius: BorderRadius.circular(25.r),
       ),
       child: Container(
-        padding: const EdgeInsets.all(36),
+        padding:  EdgeInsets.symmetric(vertical: 36,horizontal: 14.w),
         decoration: BoxDecoration(
             color: AppColors.white, borderRadius: BorderRadius.circular(25.r)),
         child: Column(
@@ -128,7 +127,7 @@ class _GoalDialogState extends State<GoalDialog> {
                 color: AppColors.black,
               ),
             ),
-            SizedBox(height: 24.h),
+            const SizedBox(height: 24),
             NumberPicker(
               value: _currentIntValue,
               minValue: 200,
@@ -145,10 +144,9 @@ class _GoalDialogState extends State<GoalDialog> {
               haptics: true,
               onChanged: (value) => setState(() => _currentIntValue = value),
             ),
-            SizedBox(height: 24.h,),
+            const SizedBox(height: 24,),
             MainButton(
               onTap: () async {
-                //TODO:Доработать условие изменения
                 await Hive.box<int>('dailygoal')
                     .put('dailygoal', _currentIntValue);
                 if(Hive.box<GDays>('goals').values.first.days?.where((el)=>el.completed==true).isNotEmpty==true){
@@ -167,7 +165,7 @@ class _GoalDialogState extends State<GoalDialog> {
                   }
                 }
                 Navigator.pop(context);
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>MainScreen()));
+                // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>MainScreen()));
               },
               label: 'OK',
               mainType: true,

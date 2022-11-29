@@ -5,7 +5,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
 import 'package:xvitamins/data/food/food_model.dart';
-import 'package:xvitamins/data/goalday/goalday.dart';
+import 'package:xvitamins/ui/add_fruit/ui/add_fruit.dart';
 import 'package:xvitamins/ui/current_day/ui/current_day.dart';
 import 'package:xvitamins/ui/onboarding/ui/onboarding.dart';
 import 'package:xvitamins/ui/stat/ui/stat_screen.dart';
@@ -14,7 +14,8 @@ import 'package:xvitamins/utils/colors/colors.dart';
 import 'package:xvitamins/utils/typography/app_typography.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({Key? key}) : super(key: key);
+  final DateTime? focusOn;
+  const CalendarScreen({Key? key,this.focusOn}) : super(key: key);
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -24,15 +25,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final DateTime today = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(child: Scaffold(
       backgroundColor: AppColors.white,
       body: Container(
         decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(
-          color: AppColors.gray2,
-          width: 0.5.w,
-        ))),
+                  color: AppColors.gray2,
+                  width: 0.5.w,
+                ))),
         child: SafeArea(
           minimum: EdgeInsets.only(
             top: 32.h,
@@ -59,21 +60,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ],
               ),
               SizedBox(
-                height: 25.h,
+                height: 15.h,
               ),
               TableCalendar(
-                focusedDay: today,
+                focusedDay: widget.focusOn ?? today,
                 currentDay:today,
                 calendarBuilders: CalendarBuilders(
-                  markerBuilder: (_,date,events)=>Center(
-                    child: Container(constraints: BoxConstraints.expand(width: 36.w,height: 35.w),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(
-                            color: dayColorSelector(date),
-                          )
-                      ),),
-                  )
+                    markerBuilder: (_,date,events)=>Center(
+                      child: Container(constraints: BoxConstraints.expand(width: 36.w,height: 35.w),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.r),
+                            border: Border.all(
+                              color: dayColorSelector(date),
+                            )
+                        ),),
+                    )
                 ),
                 onDaySelected: (day, d) => Navigator.push(
                   context,
@@ -169,7 +170,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     fontWeight: FontWeight.w500,
                     color: AppColors.gray2,
                   ),
-                  dowTextFormatter: (date,locale)=>dayLabels(date),
+                  // dowTextFormatter: (date,locale)=> dayLabels(date),
                   weekendStyle: AppTypography.medium.copyWith(
                     fontSize: 18.w,
                     fontWeight: FontWeight.w500,
@@ -185,7 +186,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
               ),
               SizedBox(
-                height: 24.h,
+                height: 20.h,
               ),
               MainButton(
                   onTap: () => pushNewScreen(context, screen: Hive.box<bool>('premium').values.first==true ? const StatScreen() : const Onboarding(),withNavBar: Hive.box<bool>('premium').values.first==true ? true : false),
@@ -195,39 +196,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => CurrentDayScreen(
-                      selected: today,
-                      // day: Hive.box<GDays>('goals')
-                      //             .values
-                      //             .first
-                      //             .days
-                      //             ?.any((element) => element.day == today) ==
-                      //         true
-                      //     ? Hive.box<GDays>('goals')
-                      //         .values
-                      //         .first
-                      //         .days
-                      //         ?.firstWhere((elem) => elem.day == today)
-                      //     : GoalDay(day: today, note: ''),
+                    builder: (_) => AddScreen(
+                      fromHome: true,
+                      day: DateUtils.dateOnly(DateTime.now()),
+                      updateParent: () => setState(() {}),
                     ),
                   ),
                 ),
                 label: 'Add fruit and Veg',
                 mainType: true,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
             ],
           ),
         ),
       ),
-    );
+    ), onWillPop:()async=>false);
   }
-
   Color dayColorSelector(DateTime date){
     if(date.day==DateTime.now().day&&date.month==DateTime.now().month&&date.year==DateTime.now().year)return AppColors.blue;
     if(Hive.box<GDays>('goals').values.first.days?.where((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year).isNotEmpty==true){
       final gday=Hive.box<GDays>('goals').values.first.days?.firstWhere((element) => element.day?.day==date.day&&element.day?.month==date.month&&element.day?.year==date.year);
-      return gday?.completed==true&&checksum(gday?.food ?? []) ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true&&gday?.note!='' ?  AppColors.red : gday?.note!=null&&gday?.note!='' ? AppColors.black : AppColors.red;
+      return gday?.completed==true&&checksum(gday?.food ?? []) ? AppColors.green : gday?.day?.isBefore(DateTime.now())==true ?  AppColors.red : gday?.note!=null ? AppColors.black : Colors.transparent;
     }
     return Colors.transparent;
   }
@@ -260,7 +250,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return 'Sa';
       case DateTime.sunday:
         return 'Su';
-      default: return "";
+      default: return "s";
     }
   }
 }

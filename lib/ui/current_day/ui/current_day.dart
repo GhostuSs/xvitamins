@@ -33,45 +33,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
   int sum = 0;
   @override
   void initState() {
-    if (Hive.box<GDays>('goals').values.first.days?.isNotEmpty == true &&
-        Hive.box<GDays>('goals')
-                .values
-                .first
-                .days
-                ?.where((element) => element.day == widget.selected)
-                .isNotEmpty ==
-            true) {
-      final list = (Hive.box<GDays>('goals')
-              .values
-              .first
-              .days
-              ?.firstWhere((element) => element.day == widget.selected)
-              .food ??
-          []);
-      final data = List.generate(
-          list.length,
-          (index) => {
-                "domain": " ${list[index].name}   $index",
-                "measure": list[index].gramms
-              });
-      for (int i = 0; i < data.length; i++) {
-        sum += data[i]['measure'] as int;
-      }
-      data.sort((a, b) => (b['measure'] as int).compareTo(a['measure'] as int));
-      if (Hive.box<int>('dailygoal').values.first - sum > 0) {
-        data.add({
-          "domain": "left",
-          "measure": Hive.box<int>('dailygoal').values.first - sum
-        });
-      }
-      chartData = data;
-    } else {
-      if (sum == 0) {
-        chartData = [
-          {"domain": 'left', "measure": Hive.box<int>('dailygoal').values.first}
-        ];
-      }
-    }
+    setChartData();
     super.initState();
     if (Hive.box<GDays>('goals')
             .values
@@ -80,22 +42,20 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
             ?.where((element) => element.day == widget.selected)
             .isNotEmpty ==
         true) {
-      if (Hive.box<GDays>('goals')
-                  .values
-                  .first
-                  .days
-                  ?.firstWhere((element) => element.day == widget.selected)
-                  .seen !=
-              true &&
-          (Hive.box<GDays>('goals')
-                  .values
-                  .first
-                  .days
-                  ?.firstWhere((element) => element.day == widget.selected)
-                  .day
-                  ?.isBefore(DateTime(DateTime.now().year, DateTime.now().month,
-                      DateTime.now().day)) ==
-              true)) {
+      if ((Hive.box<GDays>('goals')
+              .values
+              .first
+              .days
+              ?.firstWhere((element) => element.day == widget.selected)
+              .day
+              ?.isBefore(DateTime(DateTime.now().year, DateTime.now().month,
+                  DateTime.now().day)) ==
+          true)&&Hive.box<GDays>('goals')
+          .values
+          .first
+          .days
+          ?.firstWhere((element) => element.day == widget.selected)
+          .seen!=true) {
         Future.delayed(Duration.zero).then((value) => showDialog(
               context: context,
               builder: (_) => Dialog(
@@ -140,6 +100,31 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               ),
             ));
       }
+    } else {
+      if (widget.selected.isBefore(DateUtils.dateOnly(DateTime.now())) ==
+          true) {
+        Future.delayed(Duration.zero).then((value) => showDialog(
+              context: context,
+              builder: (_) => Dialog(
+                clipBehavior: Clip.hardEdge,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.r),
+                ),
+                child: CustomDialog(
+                  label: 'Goal not met',
+                  emojy: 'assets/images/notmet.png',
+                  actions: const ['OK'],
+                  onYes: () async {
+                    final GoalDay day = GoalDay(seen: true,day: widget.selected);
+                    final newData = Hive.box<GDays>('goals').values.first;
+                    newData.days?.add(day);
+                    await Hive.box<GDays>('goals').put('goals',newData);
+                    Navigator.pop(_);
+                  },
+                ),
+              ),
+            ));
+      }
     }
   }
 
@@ -158,13 +143,14 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
             .days
             ?.firstWhere((element) => element.day == widget.selected)
         : GoalDay(day: widget.selected);
-    return Container(
+    updateChartData();
+    return WillPopScope(child: Container(
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
-        color: AppColors.gray2,
-        width: 0.5.w,
-      ))),
+                color: AppColors.gray2,
+                width: 0.5.w,
+              ))),
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(
@@ -185,7 +171,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               color: AppColors.black,
             ),
             onPressed: () => Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (_) => const CalendarScreen())),
+                MaterialPageRoute(builder: (_) => CalendarScreen(focusOn: widget.selected,))),
           ),
         ),
         body: SafeArea(
@@ -201,7 +187,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                   ),
                   child: Text(
                     (widget.selected.day == DateTime.now().day &&
-                            widget.selected.month == DateTime.now().month)
+                        widget.selected.month == DateTime.now().month)
                         ? 'Goal for today'
                         : 'Goal',
                     style: AppTypography.semibold.copyWith(
@@ -234,71 +220,92 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                         strokeWidth: 0,
                         labelColor: Colors.transparent,
                         fillColor: (pieData, index) =>
-                            sum < Hive.box<int>('dailygoal').values.first &&
-                                    pieData['domain'] == 'left'
-                                ? AppColors.emptyGoals
-                                : colorSelector(index: index),
+                        sum < Hive.box<int>('dailygoal').values.first &&
+                            pieData['domain'] == 'left'
+                            ? AppColors.emptyGoals
+                            : colorSelector(index: index),
                         donutWidth: 20,
                       ),
                     ),
                     sum < Hive.box<int>('dailygoal').values.first
-                        ? widget.selected.isAfter(DateUtils.dateOnly(DateTime.now())) ? Text(
-                            '$sum/${Hive.box<int>('dailygoal').values.first}',
-                            style: AppTypography.bold.copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 20.w,
-                              color: AppColors.black,
-                            ),
-                          ) : Icon(
+                        ? widget.selected
+                        .isAfter(DateUtils.dateOnly(DateTime.now()))
+                        ? Text(
+                      '$sum/${Hive.box<int>('dailygoal').values.first}',
+                      style: AppTypography.bold.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20.w,
+                        color: AppColors.black,
+                      ),
+                    )
+                        : Icon(
                       Icons.clear,
                       color: AppColors.red,
                       size: 80.r,
                     )
                         : Icon(
-                            Icons.check,
-                            color: AppColors.green,
-                            size: 80.r,
-                          ),
+                      Icons.check,
+                      color: AppColors.green,
+                      size: 80.r,
+                    ),
                   ],
                 ),
                 Container(
                   constraints: BoxConstraints.expand(height: 50.h),
                   child: chartData.length == 1
                       ? Center(
-                          child: FoodWidget(
-                            data: chartData.first,
-                            chartData: chartData,
-                            sum: sum,
-                            onTap: (){},
-                          ),
-                        )
+                    child: FoodWidget(
+                      data: chartData.first,
+                      chartData: chartData,
+                      sum: sum,
+                      onTap: () {},
+                    ),
+                  )
                       : ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            for (var data in chartData)
-                              FoodWidget(
-                                data: data,
-                                chartData: chartData,
-                                sum: sum,
-                                  onTap:()=>showDialog(
-                                    context: context,
-                                    builder: (_) => Dialog(
-                                      clipBehavior: Clip.hardEdge,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25.r),
-                                      ),
-                                      child: CustomDialog(
-                                        label:
-                                        'Do you really want to delete this item?',
-                                        emojy: 'assets/images/reallywant.png',
-                                        actions: const ['Yes', 'No'],
-                                        onYes: () async => await delete(Hive.box<GDays>('goals').values.first.days!.firstWhere((element) => element.day==widget.selected).food!.firstWhere((element) => element.name?.trim()==data['domain'].split('   ').first.trim())).then((value) => Navigator.pop(_)),
-                                      ),
-                                    ),
-                                  ),
-                              )
-                          ],
-                        ),
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      for (final data in chartData)
+                        FoodWidget(
+                          data: data,
+                          chartData: chartData,
+                          sum: sum,
+                          onTap: () async => data['domain'].contains('left')==false ? showDialog(
+                            context: context,
+                            builder: (_) => Dialog(
+                              clipBehavior: Clip.hardEdge,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25.r),
+                              ),
+                              child: CustomDialog(
+                                label:
+                                'Do you really want to delete this item?',
+                                emojy: 'assets/images/reallywant.png',
+                                actions: const ['Yes', 'No'],
+                                onYes: () async => await delete(
+                                    Hive.box<GDays>('goals')
+                                        .values
+                                        .first
+                                        .days!
+                                        .firstWhere((element) =>
+                                    element.day ==
+                                        widget.selected)
+                                        .food!
+                                        .firstWhere((element) =>
+                                    element.name?.trim() ==
+                                        data['domain']
+                                            .split('   ')
+                                            .first
+                                            .trim()))
+                                    .then((value){
+                                  Navigator.pop(_);
+                                  setState(() {});
+                                }),
+                              ),
+                            ),
+                          ) : null,
+                        )
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 24.h,
@@ -318,7 +325,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                       ),
                     ),
                   ),
-                  label: 'Add Fruit and Veg',
+                  label: chartData.length>1 ? 'Edit Fruit and Veg':'Add Fruit and Veg',
                   mainType: true,
                 ),
                 SizedBox(
@@ -326,66 +333,69 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                 ),
                 gday?.note == '' || gday?.note == null
                     ? MainButton(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => NoteScreen(
-                              note: gday?.note ?? '',
-                              date: widget.selected,
-                            ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NoteScreen(
+                        note: gday?.note ?? '',
+                        autofocus: true,
+                        updateParent: () => setState(() {}),
+                        date: widget.selected,
+                      ),
+                    ),
+                  ),
+                  label: 'Add Note',
+                  mainType: true,
+                )
+                    : Row(
+                  children: [
+                    MainButton(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => NoteScreen(
+                            note: gday?.note ?? '',
+                            updateParent: () => setState(() {}),
+                            date: widget.selected,
+                            autofocus: true,
                           ),
                         ),
-                        label: 'Add Note',
-                        mainType: true,
-                      )
-                    : Row(
-                        children: [
-                          MainButton(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NoteScreen(
-                                  note: gday?.note ?? '',
-                                  date: widget.selected,
-                                  autofocus: true,
-                                ),
-                              ),
-                            ),
-                            label: 'Edit Note',
-                            width: 155.w,
-                            mainType: true,
-                          ),
-                          const Spacer(),
-                          MainButton(
-                            onTap: () async => showDialog(
-                              context: context,
-                              builder: (_) => Dialog(
-                                clipBehavior: Clip.hardEdge,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.r),
-                                ),
-                                child: CustomDialog(
-                                    label:
-                                        'Do you really want to delete this note?',
-                                    emojy: 'assets/images/reallywant.png',
-                                    actions: const ['Yes', 'No'],
-                                    onYes: () async => await deleteNote()
-                                        .then((value) => Navigator.pop(_))),
-                              ),
-                            ).then((value) => setState((){})),
-                            label: 'Delete Note',
-                            width: 155.w,
-                            customColor: AppColors.red,
-                            mainType: true,
-                          ),
-                        ],
                       ),
+                      label: 'Edit Note',
+                      width: 155.w,
+                      mainType: true,
+                    ),
+                    const Spacer(),
+                    MainButton(
+                      onTap: () async => showDialog(
+                        context: context,
+                        builder: (_) => Dialog(
+                          clipBehavior: Clip.hardEdge,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.r),
+                          ),
+                          child: CustomDialog(
+                              label:
+                              'Do you really want to delete this note?',
+                              emojy: 'assets/images/reallywant.png',
+                              actions: const ['Yes', 'No'],
+                              onYes: () async => await deleteNote()
+                                  .then((value) => Navigator.pop(_))),
+                        ),
+                      ).then((value) => setState(() {})),
+                      label: 'Delete Note',
+                      width: 155.w,
+                      customColor: AppColors.red,
+                      mainType: true,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
       ),
-    );
+    ), onWillPop: ()async=>false);
   }
 
   Future<void> delete(Food data) async {
@@ -393,18 +403,99 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
         .values
         .first
         .days
-        ?.where((element) =>
-    element.day == widget.selected)
+        ?.where((element) => element.day == widget.selected)
         .first
         .food
         ?.remove(data);
-    final newData =
-        Hive.box<GDays>('goals').values.first;
+    final newData = Hive.box<GDays>('goals').values.first;
     await Hive.box<GDays>('goals').clear();
-    await Hive.box<GDays>('goals')
-        .put('goals', newData);
+    await Hive.box<GDays>('goals').put('goals', newData);
+  }
+  void setChartData(){
+    if (Hive.box<GDays>('goals').values.first.days?.isNotEmpty == true &&
+        Hive.box<GDays>('goals')
+            .values
+            .first
+            .days
+            ?.where((element) => element.day == widget.selected)
+            .isNotEmpty ==
+            true) {
+      final list = (Hive.box<GDays>('goals')
+          .values
+          .first
+          .days
+          ?.firstWhere((element) => element.day == widget.selected)
+          .food ??
+          []);
+      final data = List.generate(
+          list.length,
+              (index) => {
+            "domain": " ${list[index].name}   $index",
+            "measure": list[index].gramms
+          });
+      for (int i = 0; i < data.length; i++) {
+        sum += data[i]['measure'] as int;
+      }
+      data.sort((a, b) => (b['measure'] as int).compareTo(a['measure'] as int));
+      if (Hive.box<int>('dailygoal').values.first - sum > 0) {
+        data.add({
+          "domain": "left",
+          "measure": Hive.box<int>('dailygoal').values.first - sum
+        });
+      }
+      chartData = data;
+    } else {
+      if (sum == 0) {
+        chartData = [
+          {"domain": 'left', "measure": Hive.box<int>('dailygoal').values.first}
+        ];
+      }
+    }
   }
 
+  void updateChartData(){
+    sum=0;
+    if (Hive.box<GDays>('goals').values.first.days?.isNotEmpty == true &&
+        Hive.box<GDays>('goals')
+            .values
+            .first
+            .days
+            ?.where((element) => element.day == widget.selected)
+            .isNotEmpty ==
+            true) {
+      final list = (Hive.box<GDays>('goals')
+          .values
+          .first
+          .days
+          ?.firstWhere((element) => element.day == widget.selected)
+          .food ??
+          []);
+      List<Map<String,dynamic>> data = List.generate(
+          list.length,
+              (index) => {
+            "domain": " ${list[index].name}   $index",
+            "measure": list[index].gramms
+          });
+      for (int i = 0; i < data.length; i++) {
+        sum += data[i]['measure'] as int;
+      }
+      data.sort((a, b) => (b['measure'] as int).compareTo(a['measure'] as int));
+      if (Hive.box<int>('dailygoal').values.first - sum >= 0) {
+        data.add({
+          "domain": "left",
+          "measure": Hive.box<int>('dailygoal').values.first - sum
+        });
+      }
+      chartData.clear();
+      chartData = data;
+    } else {
+      if (sum == 0) {
+        chartData = [
+          {"domain": 'left', "measure": Hive.box<int>('dailygoal').values.first}
+        ];
+      }
+    }
+  }
   ///Convert datetime to day+month
   String parseDate(DateTime date) {
     String returnableDate = "${date.day} ";
@@ -474,7 +565,6 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
 
   Future<void> deleteNote() async {
     final box = Hive.box<GDays>('goals');
-    final gday = GoalDay(note: '', day: widget.selected);
     box.values.first.days
         ?.firstWhere((element) => element.day == widget.selected)
         .note = '';
@@ -561,7 +651,7 @@ class FoodWidget extends StatelessWidget {
                 child: Text(
                   '${((data['measure'] / (sum <= Hive.box<int>('dailygoal').values.first ? Hive.box<int>('dailygoal').values.first : sum)) * 100).round()}%',
                   style: AppTypography.bold.copyWith(
-                    fontSize: 12.w,
+                    fontSize: 10.w,
                     fontWeight: FontWeight.w700,
                     color: AppColors.white,
                   ),

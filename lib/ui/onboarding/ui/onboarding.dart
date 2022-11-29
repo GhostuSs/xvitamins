@@ -13,7 +13,7 @@ class Onboarding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return WillPopScope(child: Container(
       constraints: const BoxConstraints.expand(),
       child: Scaffold(
         backgroundColor: AppColors.onbBg,
@@ -24,7 +24,7 @@ class Onboarding extends StatelessWidget {
               Image.asset('assets/images/onb.png'),
               Padding(
                 padding: EdgeInsets.only(
-                  top: 50.h,
+                  top: 45.h,
                   left: 16.w,
                   right: 16.w,
                   bottom: 20.h,
@@ -39,7 +39,7 @@ class Onboarding extends StatelessWidget {
                           icon: Icon(
                             Icons.clear,
                             color: AppColors.white,
-                            size: 30.w,
+                            size: 20.w,
                           ),
                           onPressed: () => Navigator.pop(context),
                         )
@@ -79,7 +79,7 @@ class Onboarding extends StatelessWidget {
                       height: 32.h,
                     ),
                     Text(
-                      "BUY PREMIUM FOR 0.99\$",
+                      "GET PREMIUM FOR 0.99\$",
                       style: AppTypography.regular.copyWith(
                         fontWeight: FontWeight.w500,
                         fontSize: 20.w,
@@ -95,9 +95,9 @@ class Onboarding extends StatelessWidget {
                         onTap: () async => await Hive.box<bool>('premium')
                             .put('premium', true)
                             .then((value) => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const MainScreen()))),
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const MainScreen()))),
                         label: 'Get Premium 😎',
                         customColor: AppColors.blue,
                       ),
@@ -147,7 +147,7 @@ class Onboarding extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ), onWillPop: ()async=>false);
   }
 }
 
