@@ -39,7 +39,6 @@ Future<void> main() async {
     if (kDebugMode) {
       print('empty data');
     }
-
     await Hive.box<GDays>('goals').put(
       'goals',
       GDays(

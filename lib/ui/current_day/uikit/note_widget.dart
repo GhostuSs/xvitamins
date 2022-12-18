@@ -24,6 +24,7 @@ class NoteWidget extends StatelessWidget {
           children: [
             Text(
               note,
+              textAlign: TextAlign.center,
               style: AppTypography.medium.copyWith(
                 fontSize: 14.w,
                 fontWeight: FontWeight.w500,

@@ -24,7 +24,7 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
-      constraints: const BoxConstraints.expand(height: 317),
+      constraints: BoxConstraints.expand(height: 300.h),
       padding: EdgeInsets.symmetric(vertical: 36.h, horizontal: 14.w),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -41,10 +41,10 @@ class CustomDialog extends StatelessWidget {
               color: AppColors.black,
             ),
           ),
-          const SizedBox(height:24),
+          const SizedBox(height:20),
           Image.asset(
             emojy,
-            height: 120,
+            height: 115.h,
           ),
           const Spacer(),
           Row(

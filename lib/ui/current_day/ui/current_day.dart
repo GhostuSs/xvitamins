@@ -310,10 +310,9 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                 SizedBox(
                   height: 24.h,
                 ),
-                if (gday?.note != '' && gday?.note != null)
-                  NoteWidget(
-                    note: gday?.note! ?? '',
-                  ),
+                NoteWidget(
+                  note: gday?.note=='' ? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.' :gday?.note ?? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.',
+                ),
                 const Spacer(),
                 MainButton(
                   onTap: () => Navigator.push(
