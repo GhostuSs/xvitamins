@@ -19,9 +19,10 @@ import '../../calendar/ui/calendar_screen.dart';
 class CurrentDayScreen extends StatefulWidget {
   final DateTime selected;
   // final GoalDay? day;
+  final BuildContext ctx;
   const CurrentDayScreen({
     Key? key,
-    required this.selected,
+    required this.selected, required this.ctx,
     // this.day,
   }) : super(key: key);
 
@@ -174,9 +175,9 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               color: AppColors.black,
             ),
             onPressed: (){
-              pushNewScreen(context, screen: CalendarScreen(focusOn: widget.selected,ctx: context,));
-              // Navigator.pushReplacement(context,
-              //     MaterialPageRoute(builder: (_) => CalendarScreen(focusOn: widget.selected,)));
+              // pushNewScreen(context, screen: CalendarScreen(focusOn: widget.selected,ctx: context,));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => CalendarScreen(focusOn: widget.selected, ctx: widget.ctx,)));
             },
           ),
         ),
@@ -325,7 +326,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => AddScreen(
-                        day: widget.selected,
+                        day: widget.selected,ctx: widget.ctx,
                         updateParent: () => setState(() {}),
                       ),
                     ),
@@ -344,6 +345,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                       builder: (_) => NoteScreen(
                         note: gday?.note ?? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.',
                         autofocus: true,
+                        ctx: widget.ctx,
                         updateParent: () => setState(() {}),
                         date: widget.selected,
                       ),
@@ -360,6 +362,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                         MaterialPageRoute(
                           builder: (_) => NoteScreen(
                             note: gday?.note ?? '',
+                            ctx: widget.ctx,
                             updateParent: () => setState(() {}),
                             date: widget.selected,
                             autofocus: true,

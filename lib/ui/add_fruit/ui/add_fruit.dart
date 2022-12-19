@@ -20,8 +20,9 @@ import '../../../uikit/dialog.dart';
 class AddScreen extends StatefulWidget {
   final DateTime day;
   final VoidCallback updateParent;
+  final BuildContext ctx;
   final bool? fromHome;
-  const AddScreen({Key? key, required this.day, required this.updateParent, this.fromHome,}) : super(key: key);
+  const AddScreen({Key? key, required this.day, required this.updateParent, this.fromHome, required this.ctx,}) : super(key: key);
 
   @override
   State<AddScreen> createState() => _AddScreenState();
@@ -92,7 +93,7 @@ class _AddScreenState extends State<AddScreen> {
               color: AppColors.black,
             ),
             onPressed: () => {
-              widget.fromHome==true ? pushNewScreen(context, screen: const MainScreen(),withNavBar: false) : Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> CurrentDayScreen(selected: widget.day,)))
+              widget.fromHome==true ? pushNewScreen(context, screen: const MainScreen(),withNavBar: false) : Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> CurrentDayScreen(selected: widget.day,ctx: widget.ctx,)))
             },
           ),
         ),
@@ -401,10 +402,10 @@ class _AddScreenState extends State<AddScreen> {
     namecontroller.clear();
     grammcontroller.text = '100';
     canAdd=false;
-    context.read<MainCubit>().update(gdays: Hive.box<GDays>('goals')
+    widget.updateParent();
+    widget.ctx.read<MainCubit>().update(gdays: Hive.box<GDays>('goals')
         .values
         .first);
-    widget.updateParent();
   }
 }
 

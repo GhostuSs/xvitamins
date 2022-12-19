@@ -12,13 +12,14 @@ import '../../../data/goalday/goalday.dart';
 class NoteScreen extends StatefulWidget {
   final String note;
   final bool? autofocus;
+  final BuildContext ctx;
   final VoidCallback updateParent;
   final DateTime date;
   const NoteScreen({
     Key? key,
     required this.note,
     required this.date,
-    this.autofocus, required this.updateParent,
+    this.autofocus, required this.updateParent, required this.ctx,
   }) : super(key: key);
 
   @override
@@ -64,7 +65,7 @@ class _NoteScreenState extends State<NoteScreen> {
               color: AppColors.black,
             ),
             onPressed: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: widget.date))).then((value) => setState((){}));
+              await Navigator.push(context, MaterialPageRoute(builder: (_)=>CurrentDayScreen(selected: widget.date,ctx: widget.ctx,))).then((value) => setState((){}));
             },
           ),
         ),
