@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -31,8 +32,21 @@ class _AddScreenState extends State<AddScreen> {
   @override
   void initState() {
     grammcontroller.addListener(() {
+      if(grammcontroller.text.length>1){
+        if(grammcontroller.text.startsWith('0')){
+          String formatted='';
+          bool stop=false;
+          List<String> splitter = grammcontroller.text.split('');
+          for(final liter in splitter){
+            if(liter!='0'){formatted+=liter;stop=true;}else{
+              if(stop==true)formatted+=liter;
+            }
+          }
+          grammcontroller.text=formatted;
+        }
+      }
       if(grammcontroller.text.isNotEmpty==true){
-      if(int.parse(grammcontroller.text.trim())==0) {
+      if((int.tryParse(grammcontroller.text.trim())??0)==0) {
         setState(()=>canAdd=false);
       }else{
         setState(() {
@@ -95,7 +109,7 @@ class _AddScreenState extends State<AddScreen> {
                   maxLength: 20,
                   onChanged: (s){
                     setState(
-                          () => canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0&&grammcontroller.text.isNotEmpty==true,
+                          () => canAdd = namecontroller.text.isNotEmpty == true&&(int.tryParse(grammcontroller.text)??0)>0&&grammcontroller.text.isNotEmpty==true,
                     );
                   },
                   style: AppTypography.regular.copyWith(
@@ -130,7 +144,7 @@ class _AddScreenState extends State<AddScreen> {
                   GrammButton(
                     onTap: () {
                       setState(
-                          (){int.parse(grammcontroller.text) > 10
+                          (){(int.tryParse(grammcontroller.text)??0) > 10
                           ? grammcontroller.text =
                           (int.parse(grammcontroller.text) - 10).toString()
                           : null;
@@ -144,25 +158,35 @@ class _AddScreenState extends State<AddScreen> {
                     controller: grammcontroller,
                     textAlignVertical: TextAlignVertical.center,
                     textAlign: TextAlign.center,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly // С таким фильтром могут быть введены только числа
+                    ],
                     cursorColor: AppColors.blue,
                     keyboardType: TextInputType.number,
-                    onChanged: (s)=>setState(()=>canAdd=grammcontroller.text.isNotEmpty&&(int.tryParse(grammcontroller.text)??0)>0&&namecontroller.text.isNotEmpty),
-                    // readOnly: true,
-                    maxLines: 1,
-                    maxLength: 5,
-                    style: AppTypography.regular.copyWith(
-                        fontSize: 14.w,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.black,
-                    ),
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                          borderSide: BorderSide.none,
-                        ),
-                        suffix: Text(
-                          'g',
-                          style: AppTypography.medium.copyWith(
+                    onChanged: (s){
+                      setState(() {
+                        canAdd = grammcontroller.text.isNotEmpty &&
+                            (int.tryParse(grammcontroller.text) ?? 0) > 0 &&
+                            namecontroller.text.isNotEmpty;
+                      }
+                      );
+    },
+                      // readOnly: true,
+                      maxLines: 1,
+                      maxLength: 5,
+                      style: AppTypography.regular.copyWith(
+                      fontSize: 14.w,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      ),
+                      decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide: BorderSide.none,
+                      ),
+                      suffix: Text(
+                      'g',
+                      style: AppTypography.medium.copyWith(
                               fontSize: 14.w,
                               fontWeight: FontWeight.w500,
                               color: AppColors.black),
@@ -188,7 +212,7 @@ class _AddScreenState extends State<AddScreen> {
                           ? grammcontroller.text =
                           (int.parse(grammcontroller.text) + 10).toString()
                           : grammcontroller.text='0';
-                            canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0;
+                            canAdd = namecontroller.text.isNotEmpty == true&&(int.tryParse(grammcontroller.text)??0)>0;
                           },
                     ): null;
                     grammcontroller.selection = TextSelection.fromPosition(TextPosition(offset: grammcontroller.text.length));
