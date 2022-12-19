@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:xvitamins/gen/assets.gen.dart';
 import 'package:xvitamins/ui/calendar/ui/calendar_screen.dart';
+import 'package:xvitamins/ui/main/bloc/main_cubit.dart';
 import 'package:xvitamins/ui/main/uikit/custom_navbar_widget.dart';
 import 'package:xvitamins/ui/onboarding/ui/onboarding.dart';
 import 'package:xvitamins/ui/settings/ui/settings_screen.dart';
@@ -20,22 +22,25 @@ class _MainScreenState extends State<MainScreen> {
   PersistentTabController controller = PersistentTabController(initialIndex: 0);
   @override
   Widget build(BuildContext context){
-    return WillPopScope(child: Scaffold(
-      body: PersistentTabView.custom(
-        context,
-        controller: controller,
-        screens: _buildScreens(),
-        backgroundColor: AppColors.white,
-        items: _buildItems(),
-        itemCount: 3,
-        resizeToAvoidBottomInset: false,
-        // navBarHeight: 45.h,
-        customWidget: (navbarEss) => CustomNavBarWidget(
+    return WillPopScope(child: BlocBuilder<MainCubit,MainState>(
+      bloc: context.read<MainCubit>(),
+      builder: (ctx,state)=>Scaffold(
+        body: PersistentTabView.custom(
+          context,
+          controller: controller,
+          screens: _buildScreens(context),
+          backgroundColor: AppColors.white,
           items: _buildItems(),
-          onItemSelected: (int value) => controller.index==value ? null : setState(() {
-            controller.index = value;
-          }),
-          selectedIndex: controller.index,
+          itemCount: 3,
+          resizeToAvoidBottomInset: false,
+          // navBarHeight: 45.h,
+          customWidget: (navbarEss) => CustomNavBarWidget(
+            items: _buildItems(),
+            onItemSelected: (int value) => controller.index==value ? null : setState(() {
+              controller.index = value;
+            }),
+            selectedIndex: controller.index,
+          ),
         ),
       ),
     ), onWillPop: ()async=>false);
@@ -86,8 +91,8 @@ class _MainScreenState extends State<MainScreen> {
     ];
   }
 
-  List<Widget> _buildScreens() => [
-        const CalendarScreen(),
+  List<Widget> _buildScreens(BuildContext context) => [
+        CalendarScreen(ctx: context,),
         const WeeklyScreen(),
         SettingsScreen(navigateToOnb: ()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>const Onboarding())),),
       ];

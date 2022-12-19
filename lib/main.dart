@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/data/food/food_model.dart';
+import 'package:xvitamins/ui/main/bloc/main_cubit.dart';
 import 'package:xvitamins/ui/main/ui/main_screen.dart';
 
 Future<void> main() async {
@@ -58,11 +60,13 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
+    return MultiBlocProvider(providers: [
+      BlocProvider(create: (_)=>MainCubit(),),
+    ], child: ScreenUtilInit(
       builder: (_, s) => const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: MainScreen(),
       ),
-    );
+    ));
   }
 }

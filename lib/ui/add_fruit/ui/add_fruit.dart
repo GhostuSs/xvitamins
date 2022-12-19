@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -8,6 +9,7 @@ import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
 import 'package:xvitamins/gen/assets.gen.dart';
 import 'package:xvitamins/ui/current_day/ui/current_day.dart';
+import 'package:xvitamins/ui/main/bloc/main_cubit.dart';
 import 'package:xvitamins/ui/main/ui/main_screen.dart';
 import 'package:xvitamins/uikit/main_button.dart';
 import 'package:xvitamins/utils/colors/colors.dart';
@@ -344,30 +346,32 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   Future<void> add() async {
+    print('addd');
     if (Hive.box<GDays>('goals')
             .values
             .first
             .days
-            ?.where((element) => element.day == widget.day).isNotEmpty ==
+            !.where((element) => element.day?.day == widget.day.day && element.day?.month==widget.day.month).isNotEmpty ==
         true) {
-      GoalDay gday = (Hive.box<GDays>('goals')
+      print('main');
+      final GoalDay gday = (Hive.box<GDays>('goals')
           .values
           .first
           .days!
-          .firstWhere((element) => element.day == widget.day));
-      Hive.box<GDays>('goals')
-          .values
-          .first
-          .days
-          ?.removeWhere((element) => element.day == widget.day);
+          .firstWhere((element) => element.day?.day == widget.day.day && element.day?.month==widget.day.month));
       final Food newFood = Food(
         name: namecontroller.text,
         gramms: int.parse(grammcontroller.text),
       );
+      gday.food ??= [];
       gday.food?.add(newFood);
       gday.food?.sort((a,b)=>b.gramms!.compareTo(a.gramms!));
-
-      Hive.box<GDays>('goals').values.first.days?.add(gday);
+      Hive.box<GDays>('goals')
+          .values
+          .first
+          .days
+      !.removeWhere((element) => element.day?.day == widget.day.day && element.day?.month==widget.day.month);
+      Hive.box<GDays>('goals').values.first.days!.add(gday);
       int sum=0;
       gday.food?.every((element){
         sum+=element.gramms??0;
@@ -378,6 +382,7 @@ class _AddScreenState extends State<AddScreen> {
       await Hive.box<GDays>('goals').clear();
       await Hive.box<GDays>('goals').put('goals', gdays);
     } else {
+      print('else');
       final gday=GoalDay(
         day: widget.day,
         food: [
@@ -396,6 +401,9 @@ class _AddScreenState extends State<AddScreen> {
     namecontroller.clear();
     grammcontroller.text = '100';
     canAdd=false;
+    context.read<MainCubit>().update(gdays: Hive.box<GDays>('goals')
+        .values
+        .first);
     widget.updateParent();
   }
 }

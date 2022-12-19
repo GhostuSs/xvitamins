@@ -15,7 +15,8 @@ import 'package:xvitamins/utils/typography/app_typography.dart';
 
 class CalendarScreen extends StatefulWidget {
   final DateTime? focusOn;
-  const CalendarScreen({Key? key,this.focusOn}) : super(key: key);
+  final BuildContext ctx;
+  const CalendarScreen({Key? key,this.focusOn, required this.ctx}) : super(key: key);
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -198,7 +199,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   MaterialPageRoute(
                     builder: (_) => AddScreen(
                       fromHome: true,
-                      day: DateUtils.dateOnly(DateTime.now()),
+                      day: today,
                       updateParent: () => setState(() {}),
                     ),
                   ),

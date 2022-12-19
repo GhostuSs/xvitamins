@@ -2,6 +2,7 @@ import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:xvitamins/data/GDays/gdays.dart';
 import 'package:xvitamins/data/food/food_model.dart';
 import 'package:xvitamins/data/goalday/goalday.dart';
@@ -94,6 +95,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     final newData = Hive.box<GDays>('goals').values.first;
                     // await Hive.box<GDays>('goals').clear();
                     await Hive.box<GDays>('goals').put('goals', newData);
+                    setState((){});
                     Navigator.pop(_);
                   },
                 ),
@@ -119,6 +121,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     final newData = Hive.box<GDays>('goals').values.first;
                     newData.days?.add(day);
                     await Hive.box<GDays>('goals').put('goals',newData);
+                    setState((){});
                     Navigator.pop(_);
                   },
                 ),
@@ -170,8 +173,11 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
               Icons.arrow_back,
               color: AppColors.black,
             ),
-            onPressed: () => Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (_) => CalendarScreen(focusOn: widget.selected,))),
+            onPressed: (){
+              pushNewScreen(context, screen: CalendarScreen(focusOn: widget.selected,ctx: context,));
+              // Navigator.pushReplacement(context,
+              //     MaterialPageRoute(builder: (_) => CalendarScreen(focusOn: widget.selected,)));
+            },
           ),
         ),
         body: SafeArea(
