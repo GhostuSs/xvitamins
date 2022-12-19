@@ -311,7 +311,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                   height: 24.h,
                 ),
                 NoteWidget(
-                  note: gday?.note=='' ? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.' :gday?.note ?? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.',
+                  note: gday?.note=='' ? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.' : gday?.note ?? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.',
                 ),
                 const Spacer(),
                 MainButton(
@@ -336,7 +336,7 @@ class _CurrentDayScreenState extends State<CurrentDayScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => NoteScreen(
-                        note: gday?.note ?? '',
+                        note: gday?.note ?? 'Eat minimum 400g of fruits and vegetables. Drink more water. And something else.',
                         autofocus: true,
                         updateParent: () => setState(() {}),
                         date: widget.selected,

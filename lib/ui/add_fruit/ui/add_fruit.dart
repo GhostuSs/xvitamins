@@ -40,7 +40,8 @@ class _AddScreenState extends State<AddScreen> {
         });
       }
     }else{
-        grammcontroller.text='0';
+        grammcontroller.text='';
+        canAdd=false;
       }
     });
     super.initState();
@@ -94,7 +95,7 @@ class _AddScreenState extends State<AddScreen> {
                   maxLength: 20,
                   onChanged: (s){
                     setState(
-                          () => canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0,
+                          () => canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0&&grammcontroller.text.isNotEmpty==true,
                     );
                   },
                   style: AppTypography.regular.copyWith(
@@ -145,6 +146,7 @@ class _AddScreenState extends State<AddScreen> {
                     textAlign: TextAlign.center,
                     cursorColor: AppColors.blue,
                     keyboardType: TextInputType.number,
+                    onChanged: (s)=>setState(()=>canAdd=grammcontroller.text.isNotEmpty&&(int.tryParse(grammcontroller.text)??0)>0&&namecontroller.text.isNotEmpty),
                     // readOnly: true,
                     maxLines: 1,
                     maxLength: 5,
@@ -180,12 +182,12 @@ class _AddScreenState extends State<AddScreen> {
                   GrammButton(
                     additional: true,
                     onTap: (){
-                      grammcontroller.text.length<=99990 ? setState(
+                      grammcontroller.text.length<=5 ? setState(
                           (){
-                            int.parse(grammcontroller.text) >= 0
+                            (int.tryParse(grammcontroller.text)??-1) >= 0&&grammcontroller.text.isNotEmpty==true
                           ? grammcontroller.text =
                           (int.parse(grammcontroller.text) + 10).toString()
-                          : null;
+                          : grammcontroller.text='0';
                             canAdd = namecontroller.text.isNotEmpty == true&&int.parse(grammcontroller.text)>0;
                           },
                     ): null;

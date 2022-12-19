@@ -24,7 +24,7 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
-      constraints: BoxConstraints.expand(height: 300.h),
+      constraints: BoxConstraints.expand(height: 320.h),
       padding: EdgeInsets.symmetric(vertical: 36.h, horizontal: 14.w),
       decoration: BoxDecoration(
         color: AppColors.white,
